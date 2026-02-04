@@ -61,11 +61,9 @@
             <a href="{{=URL('specifications', 'update_prices', args=[specification_obj.id])}}" class="btn btn-warning btn-sm" title="Обновить цены из номенклатуры" onclick="return confirm('Обновить цены всех позиций из номенклатуры?');">
               <i class="bi bi-arrow-clockwise"></i> Обновить цены
             </a>
-            {{if commercial_proposal:}}
-            <a href="{{=URL('specifications', 'view_commercial_proposal_page', args=[commercial_proposal.id])}}" class="btn btn-light btn-sm" target="_blank" title="Сформировать КП (А4, таблица)">
+            <a href="{{=URL('specifications', 'view_specification_kp_page', args=[specification_obj.id])}}" class="btn btn-light btn-sm" target="_blank" title="Сформировать КП (А4, дерево позиций)">
               <i class="bi bi-file-earmark-text"></i> Сформировать КП
             </a>
-            {{pass}}
             <button type="button" class="btn btn-light btn-sm" onclick="openNomenclatureSidebar()">
               <i class="bi bi-plus"></i> Добавить позицию
             </button>

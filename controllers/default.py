@@ -42,6 +42,21 @@ except Exception:
         return 'secondary'
 
 
+def profile():
+    """Заглушка: Профиль — переход на главную."""
+    redirect(URL('default', 'index'))
+
+
+def settings():
+    """Заглушка: Настройки — переход на главную."""
+    redirect(URL('default', 'index'))
+
+
+def help():
+    """Заглушка: Помощь — переход на главную."""
+    redirect(URL('default', 'index'))
+
+
 @auth.requires_login()
 def index():
     """

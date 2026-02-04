@@ -905,8 +905,74 @@ def create_commercial_proposal():
         redirect(URL('specifications', 'view_specification', args=[specification_id]))
 
 
+def view_specification_kp_page():
+    """Сформировать КП по спецификации: HTML А4 с деревом позиций (без сохранённой записи КП). args: [specification_id]."""
+    specification_id = request.args(0) or redirect(URL('default', 'index'))
+    try:
+        import specifications_service
+        import customers_service
+        specification = specifications_service.get_specification_by_id(db, specification_id)
+        if not specification:
+            session.flash = 'Спецификация не найдена'
+            redirect(URL('default', 'index'))
+        if role_helpers.is_manager(auth):
+            if specification.project_id:
+                if specification.project_id not in role_helpers.get_manager_project_ids(db, auth.user.id):
+                    raise HTTP(403, 'Доступ запрещён.')
+            else:
+                if specification.customer_id not in role_helpers.get_manager_customer_ids(db, auth.user.id):
+                    raise HTTP(403, 'Доступ запрещён.')
+        customer = customers_service.get_customer_by_id(db, specification.customer_id)
+        specification_items = db(db.specification_items.specification_id == specification_id).select(
+            db.specification_items.ALL,
+            db.nomenclature_items.description,
+            db.nomenclature_item_types.name,
+            left=[
+                db.nomenclature_items.on(db.specification_items.nomenclature_item_id == db.nomenclature_items.id),
+                db.nomenclature_item_types.on(db.nomenclature_items.item_type_id == db.nomenclature_item_types.id),
+            ],
+            orderby=db.specification_items.id
+        )
+        from decimal import Decimal
+        total_amount = Decimal('0')
+        for row in specification_items:
+            si = row.specification_items
+            qty = Decimal(str(si.quantity or 0))
+            price = Decimal(str(si.price or 0))
+            row.recalc_total = float(qty * price)
+            total_amount += qty * price
+        from collections import OrderedDict
+        grouped = OrderedDict()
+        for row in specification_items:
+            type_name = (row.nomenclature_item_types.name if row.nomenclature_item_types and row.nomenclature_item_types.name else '-') or '-'
+            if type_name not in grouped:
+                grouped[type_name] = []
+            grouped[type_name].append(row)
+        proposal_items_grouped = list(grouped.items())
+        import datetime
+        from gluon.storage import Storage
+        proposal = Storage(
+            proposal_number='КП по спецификации #%s' % specification_id,
+            proposal_date=datetime.date.today(),
+            description=specification.description or ''
+        )
+        response.view = 'specifications/view_commercial_proposal_page.html'
+        return dict(
+            proposal=proposal,
+            customer=customer,
+            proposal_items_grouped=proposal_items_grouped,
+            total_amount=float(total_amount),
+            total_amount_formatted=f"{float(total_amount):,.2f}".replace(',', ' '),
+        )
+    except HTTP:
+        raise
+    except Exception as e:
+        session.flash = 'Ошибка: %s' % str(e)
+        redirect(URL('default', 'index'))
+
+
 def view_commercial_proposal_page():
-    """Открыть КП в виде страницы А4: актуальные позиции из спецификации (количества и цены пересчитываются), дерево по типам."""
+    """Открыть КП в виде страницы А4: актуальные позиции из спецификации (количества и цены пересчитываются), дерево по типам. args: [proposal_id]."""
     proposal_id = request.args(0) or redirect(URL('default', 'index'))
     try:
         proposal = db.commercial_proposals(proposal_id)
