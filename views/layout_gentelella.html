@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="{{=T.accepted_language or 'en'}}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{=response.title or request.application}}</title>
+  <link rel="icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
+  <!-- Gentelella CSS -->
+  {{include 'gentelella_assets_css.html'}}
+  {{block head}}{{end}}
+</head>
+<body class="nav-md">
+  <div class="container body">
+    <div class="main_container">
+      <!-- Left sidebar -->
+      <div class="col-md-3 left_col menu_fixed">
+        <div class="left_col scroll-view">
+          <div class="navbar nav_title">
+            <a href="{{=URL('default','index')}}" class="site_title"><i class="fa fa-dashboard"></i> <span>{{=request.application or 'CRM'}}</span></a>
+          </div>
+          <div class="clearfix"></div>
+          <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+            <div class="menu_section">
+              <h3>Дашборды</h3>
+              <ul class="nav side-menu">
+                <li class="active"><a href="{{=URL('dashboard_main','index_gentelella')}}"><i class="fa fa-dashboard"></i> Главный (Gentelella)</a></li>
+                <li><a href="javascript:;"><i class="fa fa-bar-chart-o"></i> Дашборды <span class="fa fa-chevron-down"></span></a>
+                  <ul class="nav child_menu">
+                    <li><a href="{{=URL('dashboard_main','index_gentelella')}}">Главный (Gentelella)</a></li>
+                    <li><a href="{{=URL('default','index')}}">Главная</a></li>
+                    <li><a href="{{=URL('dashboard_main','index_deskapp')}}">Главный (DeskApp)</a></li>
+                    <li><a href="{{=URL('dashboard_analytics','index')}}">Аналитика</a></li>
+                    <li><a href="{{=URL('dashboard_overview','index')}}">Обзор</a></li>
+                  </ul>
+                </li>
+                <li><a href="{{=URL('projects','view')}}"><i class="fa fa-folder"></i> Проекты</a></li>
+                <li><a href="{{=URL('customers','customers_list')}}"><i class="fa fa-users"></i> Клиенты</a></li>
+                <li><a href="{{=URL('default','index')}}"><i class="fa fa-home"></i> На главную</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="sidebar-footer hidden-small"></div>
+        </div>
+      </div>
+      <!-- Top navigation -->
+      <div class="top_nav">
+        <div class="nav_menu">
+          <div class="nav toggle"><a id="menu_toggle" href="javascript:;"><i class="fa fa-bars"></i></a></div>
+          <nav class="nav navbar-nav">
+            <ul class="navbar-right">
+              <li><a href="{{=URL('default','index')}}" class="user-profile"><i class="fa fa-home"></i> Сайт</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <!-- Page content -->
+      <div class="right_col" role="main">
+        <div class="row">
+          <div class="col-md-12 col-sm-12">
+            {{include}}
+            {{=response.toolbar() if response.show_toolbar else ''}}
+          </div>
+        </div>
+      </div>
+      {{block footer}}
+      <footer>
+        <div class="pull-right">{{=request.application}} — Gentelella</div>
+        <div class="clearfix"></div>
+      </footer>
+      {{end}}
+    </div>
+  </div>
+  <!-- Gentelella JS (sidebar: #menu_toggle, #sidebar-menu). Bootstrap 3 для совместимости с custom.min.js -->
+  <script src="{{=URL('static','gentelella/vendors/jquery/dist/jquery.min.js')}}"></script>
+  <script src="{{=URL('static','gentelella/vendors/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+  <script src="{{=URL('static','gentelella/build/js/custom.min.js')}}"></script>
+  <script>
+  $(function() {
+    $('#sidebar-menu a[href="javascript:;"]').on('click', function(e) { e.preventDefault(); });
+    $('#menu_toggle').on('click', function(e) { e.preventDefault(); });
+  });
+  </script>
+  {{block page_js}}{{end}}
+</body>
+</html>

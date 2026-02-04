@@ -1,0 +1,146 @@
+{{extend 'layout_gentelella_bs5.html'}}
+
+{{block head}}
+{{end}}
+
+{{block header}}
+<div class="mb-4">
+  <h1 class="h3 mb-1"><i class="bi bi-grid-3x3-gap me-2"></i> Дашборд — Обзор</h1>
+  <p class="text-muted mb-0">Обзор заявок по статусам</p>
+</div>
+{{end}}
+
+<div class="container-fluid mt-4">
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-info mb-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div><h5 class="card-title">Клиентов</h5><h2 class="mb-0">{{=total_customers}}</h2></div>
+            <div><i class="bi bi-people fs-1 opacity-50"></i></div>
+          </div>
+          <div class="mt-3">
+            <div class="btn-group-vertical w-100" role="group">
+              <a href="{{=URL('customers', 'customers_list')}}" class="btn btn-light btn-sm"><i class="bi bi-list-ul"></i> Список клиентов</a>
+              <button type="button" class="btn btn-light btn-sm mt-2" onclick="openSidebar()"><i class="bi bi-plus"></i> Добавить клиента</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-primary mb-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div><h5 class="card-title">Всего проектов</h5><h2 class="mb-0">{{=total_projects}}</h2></div>
+            <div><i class="bi bi-folder fs-1 opacity-50"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-success mb-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div><h5 class="card-title">Заказов</h5><h2 class="mb-0">{{=total_orders}}</h2></div>
+            <div><i class="bi bi-cart fs-1 opacity-50"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row"><h3 class="mb-3"><i class="bi bi-list-ul"></i> Проекты по статусам</h3></div>
+  <div class="row mb-4" style="padding-top: 14px; padding-bottom: 14px;">
+    {{for stat in dashboard_stats:}}
+    <div class="col-auto mb-4 mt-2 dashboard-status-card" style="min-width: 180px; flex-shrink: 0; cursor: pointer;" data-status-name="{{=stat['name']}}" title="Показать проекты со статусом «{{=stat['name']}}»">
+      <div class="card border-{{=stat['color']}} shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <h6 class="card-title mb-0" style="font-size: 0.9rem;">{{=stat['name']}}</h6>
+            <span class="badge bg-{{=stat['color']}} badge-pill" style="font-size: 1.1rem;">{{=stat['count']}}</span>
+          </div>
+          <div class="progress" style="height: 6px;">
+            {{percentage = int((stat['count'] / total_projects) * 100) if total_projects > 0 else 0}}
+            <div class="progress-bar bg-{{=stat['color']}}" role="progressbar" style="width: {{=percentage}}%" aria-valuenow="{{=percentage}}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <p class="text-muted mt-2 mb-0 small" style="font-size: 0.75rem;">{{=percentage}}% от общего</p>
+          <p class="mt-2 mb-0 font-weight-bold" style="font-size: 0.9rem;">{{=f"{stat.get('sum', 0):,.2f}".replace(',', ' ')}} ₽</p>
+        </div>
+      </div>
+    </div>
+    {{pass}}
+  </div>
+  <div class="row mt-4" id="dashboard-projects-table">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="bi bi-list-ul"></i> Все проекты</h5>
+          <button type="button" id="btnResetFilter" class="btn btn-sm btn-secondary"><i class="bi bi-x-lg"></i> Сбросить фильтр</button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table id="projectsTable" class="table table-striped table-bordered" style="width:100%">
+              <thead class="thead-light">
+                <tr>
+                  <th>Номер проекта</th><th>Название</th><th>Клиент</th><th>Статус</th>
+                  <th title="Сумма спецификаций">Общая сумма спецификации</th><th>Дата начала</th><th>Дата окончания</th><th>Дата создания</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{if projects:}}
+                {{for project in projects:}}
+                <tr class="project-row" data-href="{{=URL('projects', 'view', args=[project.projects.id])}}" data-status="{{=project.project_statuses.name if project.project_statuses else ''}}" style="cursor: pointer;">
+                  <td data-order="{{=project.projects.project_number or ''}}"><strong>{{=project.projects.project_number or '-'}}</strong></td>
+                  <td>{{=project.projects.name}}</td>
+                  <td onclick="event.stopPropagation();">{{if project.customers:}}<a href="{{=URL('customers', 'customer', args=[project.projects.customer_id])}}">{{=project.customers.name}}</a>{{else:}}-{{pass}}</td>
+                  <td>{{if project.project_statuses:}}{{status_color = status_colors.get(project.projects.status_id, 'secondary')}}<span class="badge bg-{{=status_color}}">{{=project.project_statuses.name}}</span>{{else:}}<span class="badge bg-secondary">-</span>{{pass}}</td>
+                  <td data-order="{{=float(project_specification_sums.get(project.projects.id, 0))}}"><strong>{{=f"{project_specification_sums.get(project.projects.id, 0):,.2f}".replace(',', ' ')}} ₽</strong></td>
+                  <td data-order="{{=project.projects.start_date.isoformat() if project.projects.start_date else ''}}">{{=project.projects.start_date.strftime('%d.%m.%Y') if project.projects.start_date else '-'}}</td>
+                  <td data-order="{{=project.projects.end_date.isoformat() if project.projects.end_date else ''}}">{{=project.projects.end_date.strftime('%d.%m.%Y') if project.projects.end_date else '-'}}</td>
+                  <td data-order="{{=project.projects.created_on.strftime('%Y-%m-%d %H:%M') if project.projects.created_on else ''}}">{{=project.projects.created_on.strftime('%d.%m.%Y %H:%M') if project.projects.created_on else '-'}}</td>
+                </tr>
+                {{pass}}
+                {{else:}}
+                <tr><td colspan="8" class="text-center text-muted"><i class="bi bi-info-circle"></i> Проекты не найдены</td></tr>
+                {{pass}}
+              </tbody>
+              <tfoot>
+                <tr class="table-info font-weight-bold"><td colspan="4" class="text-end">Общая сумма:</td><td id="dashboard-specification-sum-total">{{=f"{dashboard_specification_total:,.2f}".replace(',', ' ')}} ₽</td><td colspan="3"></td></tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.opacity-50{opacity:0.5}.shadow-sm{box-shadow:0 .125rem .25rem rgba(0,0,0,.075)!important}.card{transition:transform .2s}.card:hover{transform:translateY(-5px);box-shadow:0 .5rem 1rem rgba(0,0,0,.15)!important}.table thead th{vertical-align:middle;white-space:nowrap}.table tbody td{vertical-align:middle}.table tbody tr.project-row:hover{background-color:#f8f9fa!important}.row.d-flex.flex-nowrap{scrollbar-width:thin}.customer-sidebar{position:fixed;top:0;right:-500px;width:500px;height:100vh;background:white;box-shadow:-2px 0 10px rgba(0,0,0,.1);transition:right .3s ease;z-index:1050;overflow-y:auto}.customer-sidebar.open{right:0}.customer-sidebar-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1040;display:none}.customer-sidebar-overlay.show{display:block}{{if show_customer_panel:}}.customer-sidebar-overlay{display:block}{{pass}}.customer-customer-sidebar-header{padding:20px;border-bottom:1px solid #dee2e6;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white}.customer-sidebar-body{padding:20px}
+</style>
+<div class="customer-sidebar-overlay" id="customer-sidebarOverlay" onclick="closeCustomerSidebar()"></div>
+<div class="customer-sidebar {{='open' if show_customer_panel else ''}}" id="customerSidebar">
+  <div class="customer-customer-sidebar-header"><div class="d-flex justify-content-between align-items-center"><h4 class="mb-0"><i class="bi bi-person-plus"></i> Добавление клиента</h4><button type="button" class="btn btn-light btn-sm" onclick="closeCustomerSidebar()"><i class="bi bi-x-lg"></i></button></div></div>
+  <div class="customer-sidebar-body">
+    {{=form_customer.custom.begin}}
+    {{if form_customer.errors:}}<div class="alert alert-danger"><strong>Ошибки:</strong><ul class="mb-0">{{for field, error in form_customer.errors.items():}}<li>{{=field}}: {{=error}}</li>{{pass}}</ul></div>{{pass}}
+    <div class="mb-3"><label for="customers_name">Имя клиента <span class="text-danger">*</span></label>{{=form_customer.custom.widget.name}}</div>
+    <div class="mb-3"><label for="customers_phone">Телефон</label>{{=form_customer.custom.widget.phone}}</div>
+    <div class="mb-3"><label for="customers_email">Email</label>{{=form_customer.custom.widget.email}}</div>
+    <div class="mb-3"><label for="customers_address">Адрес</label>{{=form_customer.custom.widget.address}}</div>
+    <div class="mb-3"><label for="customers_notes">Примечания</label>{{=form_customer.custom.widget.notes}}</div>
+    <div class="mb-3">{{=form_customer.custom.submit}}<button type="button" class="btn btn-secondary btn-block mt-2" onclick="closeCustomerSidebar()">Отмена</button></div>
+    {{=form_customer.custom.end}}
+  </div>
+</div>
+<script>
+function openSidebar(){document.getElementById('customerSidebar').classList.add('open');document.getElementById('customer-sidebarOverlay').classList.add('show');document.body.style.overflow='hidden'}
+function closeCustomerSidebar(){document.getElementById('customerSidebar').classList.remove('open');document.getElementById('customer-sidebarOverlay').classList.remove('show');document.body.style.overflow=''}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCustomerSidebar()});
+$(function(){
+  function updateDashboardSum(){var t=0;$('#projectsTable tbody tr.project-row:visible').each(function(){t+=parseFloat($(this).find('td').eq(4).attr('data-order'))||0});$('#dashboard-specification-sum-total').text(t.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ₽')}
+  $('#projectsTable').on('click','tbody tr.project-row',function(e){if($(e.target).closest('a').length)return;var h=$(this).data('href');if(h)window.location.href=h});
+  $(document).on('click','.dashboard-status-card',function(){var n=$(this).data('status-name');if(n){$('#projectsTable tbody tr.project-row').each(function(){$(this).toggle($(this).data('status')===n)});updateDashboardSum();document.getElementById('dashboard-projects-table').scrollIntoView({behavior:'smooth',block:'start'})}});
+  $('#btnResetFilter').on('click',function(){$('#projectsTable tbody tr.project-row').show();updateDashboardSum()});
+});
+</script>

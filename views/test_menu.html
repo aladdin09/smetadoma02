@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Фирменное меню</title>
+    <style>
+        :root {
+            --brand: #f0801d;
+            --c1: #4A14F7;
+            --c2: #14F721;
+            --c3: #43A248;
+            --c4: #785D46;
+            --c5: #514678;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: var(--c5); /* спокойный тёмный фон */
+            color: #fff;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 2rem;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 0.04em;
+        }
+
+        .logo span {
+            color: var(--brand); /* фирменный цвет как акцент в логотипе */
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: #ffffffcc;
+            text-decoration: none;
+            font-size: 0.95rem;
+            padding: 0.4rem 0;
+            position: relative;
+        }
+
+        nav a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background: var(--brand); /* подчёркивание фирменным цветом */
+            transition: width 0.2s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        nav a.active {
+            color: #fff;
+        }
+
+        nav a.active::after {
+            width: 100%;
+        }
+
+        main {
+            padding: 2rem;
+        }
+
+        .cta {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            background: var(--brand); /* фирменный цвет для ключевой кнопки */
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .tags {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        .tag.c1 { background: var(--c1); }
+        .tag.c2 { background: var(--c2); color: #053000; }
+        .tag.c3 { background: var(--c3); }
+        .tag.c4 { background: var(--c4); }
+    </style>
+</head>
+<body>
+<header>
+    <div class="topbar">
+        <div class="logo">My<span>Brand</span></div>
+        <nav>
+            <a href="#" class="active">Главная</a>
+            <a href="#">Услуги</a>
+            <a href="#">Проекты</a>
+            <a href="#">О компании</a>
+            <a href="#">Контакты</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <h1>Заголовок раздела</h1>
+    <p>
+        Здесь может быть описание сервиса, ERP, CPQ — всё, что относится к твоему продукту.
+        Фирменный цвет работает как акцент, а не как заливка всего интерфейса.
+    </p>
+    <button class="cta">Основное действие</button>
+
+    <div class="tags">
+        <span class="tag c1">#4A14F7</span>
+        <span class="tag c2">#14F721</span>
+        <span class="tag c3">#43A248</span>
+        <span class="tag c4">#785D46</span>
+    </div>
+</main>
+</body>
+</html>

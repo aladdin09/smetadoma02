@@ -1,0 +1,95 @@
+{{extend 'layout_gentelella_bs5.html'}}
+
+{{block header}}
+{{if breadcrumbs:}}
+<nav aria-label="breadcrumb" class="mb-2">
+  <ol class="breadcrumb mb-0">
+    {{for crumb in breadcrumbs:}}
+    {{if crumb['url']:}}
+    <li class="breadcrumb-item"><a href="{{=crumb['url']}}">{{=crumb['label']}}</a></li>
+    {{else:}}
+    <li class="breadcrumb-item active" aria-current="page">{{=crumb['label']}}</li>
+    {{pass}}
+    {{pass}}
+  </ol>
+</nav>
+{{pass}}
+{{end}}
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Информация о позиции номенклатуры -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="bi bi-info-circle"></i> Информация о позиции номенклатуры</h5>
+        </div>
+        <div class="card-body">
+          <table class="table table-borderless">
+            <tr>
+              <th width="40%">ID:</th>
+              <td>#{{=item.id}}</td>
+            </tr>
+            <tr>
+              <th>Номер:</th>
+              <td><strong>{{=item.item_number}}</strong></td>
+            </tr>
+            <tr>
+              <th>Тип позиции:</th>
+              <td>{{=item.item_type_id.name if item.item_type_id else '-'}}</td>
+            </tr>
+            <tr>
+              <th>Дата:</th>
+              <td>{{=item.item_date.strftime('%d.%m.%Y') if item.item_date else '-'}}</td>
+            </tr>
+            <tr>
+              <th>Единица измерения:</th>
+              <td>{{=getattr(item, 'unit', None) or 'шт'}}</td>
+            </tr>
+            <tr>
+              <th>Общая стоимость:</th>
+              <td><strong class="text-success" style="font-size: 1.2em;">{{=f"{float(item.total_cost or 0):,.2f}".replace(',', ' ')}} ₽</strong></td>
+            </tr>
+            {{if item.description:}}
+            <tr>
+              <th>Описание:</th>
+              <td>{{=item.description}}</td>
+            </tr>
+            {{pass}}
+            <tr>
+              <th>Дата создания:</th>
+              <td>{{=item.created_on.strftime('%d.%m.%Y %H:%M') if item.created_on else '-'}}</td>
+            </tr>
+            <tr>
+              <th>Дата изменения:</th>
+              <td>{{=item.modified_on.strftime('%d.%m.%Y %H:%M') if item.modified_on else '-'}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Действия -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0"><i class="bi bi-cog"></i> Действия</h5>
+        </div>
+        <div class="card-body">
+          <div class="btn-group-vertical w-100" role="group">
+            <a href="{{=URL('nomenclature_items', 'edit', args=[item.id])}}" 
+               class="btn btn-primary mb-2">
+              <i class="bi bi-pencil"></i> Редактировать позицию
+            </a>
+            <a href="{{=URL('nomenclature_items', 'delete', args=[item.id])}}" 
+               class="btn btn-danger mb-2"
+               onclick="return confirm('Вы уверены, что хотите удалить эту позицию номенклатуры?');">
+              <i class="bi bi-trash"></i> Удалить позицию
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

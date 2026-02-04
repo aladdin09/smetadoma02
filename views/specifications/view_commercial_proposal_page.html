@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>КП {{=proposal.proposal_number}}</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 10pt;
+      color: #000;
+      margin: 0;
+      padding: 15mm;
+      max-width: 210mm;
+      min-height: 297mm;
+      margin-left: auto;
+      margin-right: auto;
+      background: #fff;
+    }
+    @media print {
+      body {
+        padding: 0;
+        max-width: none;
+        min-height: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+    @media screen {
+      body {
+        box-shadow: 0 0 20px rgba(0,0,0,.15);
+      }
+    }
+    h1 {
+      text-align: center;
+      font-size: 16pt;
+      margin: 0 0 16px 0;
+      color: #1a1a1a;
+    }
+    .info-block {
+      margin-bottom: 14px;
+    }
+    .info-block table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .info-block td {
+      padding: 4px 8px;
+      vertical-align: top;
+    }
+    .info-block td:first-child {
+      font-weight: bold;
+      width: 120px;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .items-table th,
+    .items-table td {
+      border: 1px solid #333;
+      padding: 6px 8px;
+      text-align: left;
+    }
+    .items-table th {
+      background: #374151;
+      color: #fff;
+      font-weight: bold;
+    }
+    .items-table .tree-parent td {
+      background: #e5e7eb;
+      font-weight: bold;
+      border-bottom: 2px solid #333;
+    }
+    .items-table .tree-child td:first-child {
+      padding-left: 24px;
+    }
+    .items-table .text-center { text-align: center; }
+    .items-table .text-right { text-align: right; }
+    .items-table tfoot td {
+      font-weight: bold;
+      background: #f3f4f6;
+      border-top: 2px solid #333;
+    }
+    .items-table tfoot .total-label {
+      text-align: right;
+      padding-right: 8px;
+    }
+    .no-print {
+      margin-bottom: 12px;
+    }
+    .no-print a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+    .no-print a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ</h1>
+
+  <div class="info-block">
+    <table>
+      <tr><td>Номер КП:</td><td>{{=proposal.proposal_number or '-'}}</td></tr>
+      <tr><td>Дата:</td><td>{{=proposal.proposal_date.strftime('%d.%m.%Y') if proposal.proposal_date else '-'}}</td></tr>
+      <tr><td>Клиент:</td><td>{{=customer.full_name or customer.name or '-'}}</td></tr>
+      {{if customer.phone:}}<tr><td>Телефон:</td><td>{{=customer.phone}}</td></tr>{{pass}}
+      {{if customer.email:}}<tr><td>Email:</td><td>{{=customer.email}}</td></tr>{{pass}}
+    </table>
+  </div>
+
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th>Тип позиции / Позиция номенклатуры</th>
+        <th class="text-center" style="width: 70px;">Кол-во</th>
+        <th class="text-center" style="width: 50px;">Ед.</th>
+        <th class="text-right" style="width: 90px;">Цена</th>
+        <th class="text-right" style="width: 90px;">Сумма</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{if proposal_items_grouped:}}
+      {{for type_name, items in proposal_items_grouped:}}
+      <tr class="tree-parent">
+        <td colspan="5"><strong>{{=type_name}}</strong></td>
+      </tr>
+      {{for row in items:}}
+      {{si = row.specification_items}}
+      <tr class="tree-child">
+        <td>{{=row.nomenclature_items.description if row.nomenclature_items and (row.nomenclature_items.description or '').strip() else (si.item_name or '-')}}</td>
+        <td class="text-center">{{=si.quantity}}</td>
+        <td class="text-center">{{=si.unit or 'шт'}}</td>
+        <td class="text-right">{{=f"{float(si.price or 0):,.2f}".replace(',', ' ')}} ₽</td>
+        <td class="text-right">{{=f"{row.recalc_total:,.2f}".replace(',', ' ')}} ₽</td>
+      </tr>
+      {{pass}}
+      {{pass}}
+      {{else:}}
+      <tr><td colspan="5" class="text-center">Позиции отсутствуют</td></tr>
+      {{pass}}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4" class="total-label">ИТОГО:</td>
+        <td class="text-right">{{=total_amount_formatted}} ₽</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  {{if proposal.description:}}
+  <p style="margin-top: 14px;"><strong>Примечания:</strong><br>{{=proposal.description}}</p>
+  {{pass}}
+</body>
+</html>

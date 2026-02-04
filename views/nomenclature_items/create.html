@@ -1,0 +1,44 @@
+{{extend 'layout_gentelella_bs5.html'}}
+
+{{block header}}
+<div class="jumbotron jumbotron-fluid" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:40px;">
+  <div class="container">
+    <h1 class="display-4"><i class="bi bi-plus-circle"></i> Создание позиции номенклатуры</h1>
+    <p class="lead">Добавление новой позиции номенклатуры в систему</p>
+  </div>
+</div>
+{{end}}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0"><i class="bi bi-edit"></i> Форма создания позиции номенклатуры</h5>
+                </div>
+                <div class="card-body">
+                    {{if default_number:}}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Автоматически сгенерированный номер: <strong>{{=default_number}}</strong>
+                    </div>
+                    {{pass}}
+                    {{=form}}
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="{{=URL('nomenclature_items', 'list')}}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Назад к списку
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    margin-top: 20px;
+}
+.form-group {
+    margin-bottom: 1rem;
+}
+</style>

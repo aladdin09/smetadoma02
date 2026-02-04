@@ -1,0 +1,221 @@
+{{extend 'layout_gentelella_bs5.html'}}
+
+{{block header}}
+    {{if breadcrumbs:}}
+        <nav aria-label="breadcrumb" class="mb-2">
+            <ol class="breadcrumb mb-0">
+                {{for crumb in breadcrumbs:}}
+                    {{if crumb['url']:}}
+                        <li class="breadcrumb-item"><a href="{{=crumb['url']}}">{{=crumb['label']}}</a></li>
+                    {{else:}}
+                        <li class="breadcrumb-item active" aria-current="page">{{=crumb['label']}}</li>
+                    {{pass}}
+                {{pass}}
+            </ol>
+        </nav>
+    {{pass}}
+{{end}}
+
+<div class="container-fluid mt-2">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="card-title mb-0"><i class="bi bi-tags me-2"></i> Список типов позиций номенклатуры</h5>
+                    <button type="button" class="btn btn-primary btn-sm ms-auto" onclick="openSidebar()">
+                        <i class="bi bi-plus me-1"></i> Добавить тип
+                    </button>
+                </div>
+
+                <div class="card-body">
+                    {{if item_types:}}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Название</th>
+                                        <th>Описание</th>
+                                        <th>Порядок сортировки</th>
+                                        <th>Активен</th>
+                                        <th class="text-nowrap" style="min-width: 100px;">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{for item_type in item_types:}}
+                                        <tr>
+                                            <td>{{=item_type.id}}</td>
+                                            <td><strong>{{=item_type.name}}</strong></td>
+                                            <td>{{=item_type.description or '-'}}</td>
+                                            <td>{{=item_type.sort_order}}</td>
+                                            <td>
+                                                {{if item_type.is_active:}}
+                                                    <span class="badge bg-success">Да</span>
+                                                {{else:}}
+                                                    <span class="badge bg-secondary">Нет</span>
+                                                {{pass}}
+                                            </td>
+                                            <td class="text-nowrap actions-cell">
+                                                <a href="{{=URL('nomenclature_item_types', 'list', vars=dict(edit=item_type.id))}}" class="btn btn-sm btn-primary me-2"><i class="bi bi-pencil"></i></a>
+                                                <a href="{{=URL('nomenclature_item_types', 'delete', args=[item_type.id])}}" class="btn btn-sm btn-danger" onclick="return confirm('Удалить?');"><i class="bi bi-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                    {{pass}}
+                                </tbody>
+                            </table>
+                        </div>
+                    {{else:}}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Типы позиций номенклатуры не найдены.
+                            <button type="button" class="btn btn-link btn-sm p-0" onclick="openSidebar()">Создать первый тип</button>
+                        </div>
+                    {{pass}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table th { background-color: #f8f9fa; font-weight: 600; }
+.table td.actions-cell { min-width: 180px; white-space: nowrap; }
+.item-type-sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.5); z-index: 1040; display: none; }
+.item-type-sidebar-overlay.show { display: block; }
+.item-type-sidebar { position: fixed; top: 0; right: -420px; width: 420px; max-width: 100vw; height: 100vh; background: var(--bs-body-bg); box-shadow: -2px 0 12px rgba(0,0,0,.15); transition: right 0.3s ease; z-index: 1050; overflow-y: auto; display: flex; flex-direction: column; }
+.item-type-sidebar.open { right: 0; }
+.item-type-edit-sidebar.open { right: 0; }
+.sidebar-header { padding: 1rem; border-bottom: 1px solid var(--bs-border-color); background: var(--bs-primary); color: #fff; }
+.sidebar-body { padding: 1rem; flex: 1; overflow-y: auto; }
+</style>
+
+<div class="item-type-sidebar-overlay" id="itemTypeOverlay" onclick="closeAllSidebars()"></div>
+
+{{if form_status:}}
+<div class="item-type-sidebar" id="itemTypeSidebar">
+    <div class="sidebar-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-white"><i class="bi bi-tags me-2"></i> Добавление типа</h5>
+        <button type="button" class="btn btn-light btn-sm" onclick="closeSidebar()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="sidebar-body">
+        {{=form_status.custom.begin}}
+
+        {{if form_status.errors:}}
+            <div class="alert alert-danger">
+                <strong>Ошибки:</strong>
+                <ul class="mb-0">
+                    {{for field, error in form_status.errors.items():}}
+                        <li>{{=field}}: {{=error}}</li>
+                    {{pass}}
+                </ul>
+            </div>
+        {{pass}}
+
+        <div class="mb-3"><label class="form-label">Название *</label>{{=form_status.custom.widget.name}}</div>
+        <div class="mb-3"><label class="form-label">Описание</label>{{=form_status.custom.widget.description}}</div>
+        <div class="mb-3"><label class="form-label">Порядок сортировки</label>{{=form_status.custom.widget.sort_order}}</div>
+        <div class="mb-3">
+            <div class="form-check">
+                {{=form_status.custom.widget.is_active}}
+                <label class="form-check-label">Активен</label>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{=form_status.custom.submit}}
+            <a href="{{=URL('nomenclature_item_types', 'list')}}" class="btn btn-secondary w-100 mt-2">Отмена</a>
+        </div>
+
+        {{=form_status.custom.end}}
+    </div>
+</div>
+{{pass}}
+
+{{if form_edit:}}
+<div class="item-type-sidebar" id="itemTypeEditSidebar">
+    <div class="sidebar-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-white"><i class="bi bi-pencil me-2"></i> Редактирование типа</h5>
+        <a href="{{=URL('nomenclature_item_types', 'list')}}" class="btn btn-light btn-sm"><i class="bi bi-x-lg"></i></a>
+    </div>
+
+    <div class="sidebar-body">
+        {{=form_edit.custom.begin}}
+
+        {{if form_edit.errors:}}
+            <div class="alert alert-danger">
+                <strong>Ошибки:</strong>
+                <ul class="mb-0">
+                    {{for field, error in form_edit.errors.items():}}
+                        <li>{{=field}}: {{=error}}</li>
+                    {{pass}}
+                </ul>
+            </div>
+        {{pass}}
+
+        <div class="mb-3"><label class="form-label">Название *</label>{{=form_edit.custom.widget.name}}</div>
+        <div class="mb-3"><label class="form-label">Описание</label>{{=form_edit.custom.widget.description}}</div>
+        <div class="mb-3"><label class="form-label">Порядок сортировки</label>{{=form_edit.custom.widget.sort_order}}</div>
+        <div class="mb-3">
+            <div class="form-check">
+                {{=form_edit.custom.widget.is_active}}
+                <label class="form-check-label">Активен</label>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{=form_edit.custom.submit}}
+            <a href="{{=URL('nomenclature_item_types', 'list')}}" class="btn btn-secondary w-100 mt-2">Отмена</a>
+        </div>
+
+        {{=form_edit.custom.end}}
+    </div>
+</div>
+{{pass}}
+
+<script>
+function openSidebar() { 
+  document.getElementById('itemTypeSidebar').classList.add('open'); 
+  document.getElementById('itemTypeOverlay').classList.add('show'); 
+  document.body.style.overflow = 'hidden'; 
+}
+function closeSidebar() { 
+  var s = document.getElementById('itemTypeSidebar'); 
+  if(s) s.classList.remove('open'); 
+  document.getElementById('itemTypeOverlay').classList.remove('show'); 
+  document.body.style.overflow = ''; 
+}
+function closeEditSidebar() { 
+  var el = document.getElementById('itemTypeEditSidebar'); 
+  if (el) el.classList.remove('open'); 
+  document.getElementById('itemTypeOverlay').classList.remove('show'); 
+  document.body.style.overflow = ''; 
+}
+function closeAllSidebars() { 
+  closeSidebar(); 
+  closeEditSidebar(); 
+}
+document.addEventListener('keydown', function(e) { 
+  if (e.key === 'Escape') closeAllSidebars(); 
+});
+{{if show_edit_panel:}}
+(function openEditPanelOnLoad() { 
+  function openPanel() {
+    var overlay = document.getElementById('itemTypeOverlay'); 
+    var panel = document.getElementById('itemTypeEditSidebar');
+    var createPanel = document.getElementById('itemTypeSidebar');
+    if (createPanel) createPanel.classList.remove('open');
+    if (panel && overlay) { 
+      panel.classList.add('open'); 
+      overlay.classList.add('show'); 
+      document.body.style.overflow = 'hidden'; 
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', openPanel);
+  } else {
+    openPanel();
+  }
+})();
+{{pass}}
+</script>
+

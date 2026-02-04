@@ -1,0 +1,569 @@
+{{extend 'layout_gentelella_bs5.html'}}
+
+{{block header}}
+{{if breadcrumbs:}}
+<nav aria-label="breadcrumb" class="mb-2">
+  <ol class="breadcrumb mb-0">
+    {{for crumb in breadcrumbs:}}
+    {{if crumb['url']:}}
+    <li class="breadcrumb-item"><a href="{{=crumb['url']}}">{{=crumb['label']}}</a></li>
+    {{else:}}
+    <li class="breadcrumb-item active" aria-current="page">{{=crumb['label']}}</li>
+    {{pass}}
+    {{pass}}
+  </ol>
+</nav>
+{{pass}}
+{{end}}
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Информация о клиенте -->
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="bi bi-info-circle"></i> Информация о клиенте</h5>
+          <button type="button" class="btn btn-light btn-sm" onclick="openCustomerEditPanel(); event.stopPropagation();" title="Редактировать">
+            <i class="bi bi-pencil"></i>
+          </button>
+        </div>
+        <div class="card-body">
+          <table class="table table-borderless">
+            {{if customer.full_name:}}
+            <tr>
+              <th width="40%">ФИО:</th>
+              <td><strong>{{=customer.full_name}}</strong></td>
+            </tr>
+            {{pass}}
+            {{if customer.last_name:}}
+            <tr>
+              <th>Фамилия:</th>
+              <td>{{=customer.last_name}}</td>
+            </tr>
+            {{pass}}
+            <tr>
+              <th width="40%">Имя:</th>
+              <td>{{=customer.name}}</td>
+            </tr>
+            {{if customer.middle_name:}}
+            <tr>
+              <th>Отчество:</th>
+              <td>{{=customer.middle_name}}</td>
+            </tr>
+            {{pass}}
+            {{if customer.phone:}}
+            <tr>
+              <th>Телефон:</th>
+              <td><a href="tel:{{=customer.phone}}">{{=customer.phone}}</a></td>
+            </tr>
+            {{pass}}
+            {{if customer.email:}}
+            <tr>
+              <th>Email:</th>
+              <td><a href="mailto:{{=customer.email}}">{{=customer.email}}</a></td>
+            </tr>
+            {{pass}}
+            {{if customer.address:}}
+            <tr>
+              <th>Адрес:</th>
+              <td>{{=customer.address}}</td>
+            </tr>
+            {{pass}}
+            {{if customer.notes:}}
+            <tr>
+              <th>Примечания:</th>
+              <td>{{=customer.notes}}</td>
+            </tr>
+            {{pass}}
+            {{if customer.comments:}}
+            <tr>
+              <th>Комментарии:</th>
+              <td>{{=customer.comments}}</td>
+            </tr>
+            {{pass}}
+            <tr>
+              <th>Дата создания:</th>
+              <td>{{=customer.created_on.strftime('%d.%m.%Y %H:%M') if customer.created_on else '-'}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Проекты клиента -->
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="bi bi-folder"></i> Проекты клиента</h5>
+          <button type="button" class="btn btn-light btn-sm" onclick="openProjectSidebar()">
+            <i class="bi bi-plus"></i> Добавить проект
+          </button>
+        </div>
+        <div class="card-body">
+          {{if projects:}}
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>Номер проекта</th>
+                  <th>Название</th>
+                  <th>Статус</th>
+                  <th>Бюджет</th>
+                  <th>Дата начала</th>
+                  <th>Дата окончания</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{for project in projects:}}
+                <tr style="cursor: pointer;" onclick="window.location.href='{{=URL('projects', 'view', args=[project.projects.id])}}'">
+                  <td><strong>{{=project.projects.project_number or '-'}}</strong></td>
+                  <td>{{=project.projects.name}}</td>
+                  <td>
+                    {{if project.project_statuses:}}
+                      {{status_id = project.projects.status_id}}
+                      {{status_color = status_colors.get(status_id, 'secondary') if status_colors else 'secondary'}}
+                      <span class="badge bg-{{=status_color}}">{{=project.project_statuses.name}}</span>
+                    {{else:}}
+                      <span class="badge bg-secondary">-</span>
+                    {{pass}}
+                  </td>
+                  <td>{{=f"{float(project.projects.budget or 0):,.2f}".replace(',', ' ')}} ₽</td>
+                  <td>{{=project.projects.start_date.strftime('%d.%m.%Y') if project.projects.start_date else '-'}}</td>
+                  <td>{{=project.projects.end_date.strftime('%d.%m.%Y') if project.projects.end_date else '-'}}</td>
+                  <td onclick="event.stopPropagation();">
+                    <a href="{{=URL('projects', 'view', args=[project.projects.id])}}" class="btn btn-sm btn-info" title="Просмотр">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="{{=URL('projects', 'delete', args=[project.projects.id], vars=dict(customer_id=customer.id))}}" class="btn btn-sm btn-danger" title="Удалить" onclick="return confirm('Удалить этот проект?');">
+                      <i class="bi bi-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+                {{pass}}
+              </tbody>
+            </table>
+          </div>
+          {{else:}}
+          <p class="text-muted text-center">У клиента пока нет проектов</p>
+          {{pass}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Стили для кликабельных строк таблицы проектов */
+.table tbody tr[onclick] {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.table tbody tr[onclick]:hover {
+  background-color: #f8f9fa !important;
+}
+
+.table tbody tr[onclick] td:last-child {
+  cursor: default;
+}
+
+/* Sidebar стили */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -500px;
+  width: 500px;
+  height: 100vh;
+  background: white;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+  transition: right 0.3s ease;
+  z-index: 1050;
+  overflow-y: auto;
+}
+
+.sidebar.open {
+  right: 0;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1040;
+  display: none;
+}
+
+.sidebar-overlay.show {
+  display: block;
+}
+
+{{if show_project_panel:}}
+.sidebar-overlay {
+  display: block;
+}
+{{pass}}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid #dee2e6;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.sidebar-body {
+  padding: 20px;
+}
+</style>
+
+<!-- Sidebar для добавления проекта -->
+<div class="sidebar-overlay" id="projectSidebarOverlay" onclick="closeProjectSidebar()"></div>
+<div class="sidebar {{='open' if show_project_panel else ''}}" id="projectSidebar">
+  <div class="sidebar-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4 class="mb-0"><i class="bi bi-folder-plus"></i> Добавление проекта</h4>
+      <button type="button" class="btn btn-light btn-sm" onclick="closeProjectSidebar()">
+        <i class="bi bi-times"></i>
+      </button>
+    </div>
+  </div>
+  <div class="sidebar-body">
+    {{=form_project.custom.begin}}
+    <input type="hidden" name="customer_id" value="{{=customer.id}}">
+    {{if form_project.errors:}}
+    <div class="alert alert-danger">
+      <strong>Ошибки:</strong>
+      <ul class="mb-0">
+        {{for field, error in form_project.errors.items():}}
+        <li>{{=field}}: {{=error}}</li>
+        {{pass}}
+      </ul>
+    </div>
+    {{pass}}
+    <div class="form-group">
+      <label for="projects_name">Название проекта <span class="text-danger">*</span></label>
+      {{=form_project.custom.widget.name}}
+    </div>
+    <div class="form-group">
+      <label for="projects_budget">Бюджет проекта</label>
+      {{=form_project.custom.widget.budget}}
+    </div>
+    <div class="form-group">
+      <label for="projects_start_date">Дата начала проекта</label>
+      {{=form_project.custom.widget.start_date}}
+    </div>
+    <div class="form-group">
+      <label for="projects_end_date">Дата окончания проекта</label>
+      {{=form_project.custom.widget.end_date}}
+    </div>
+    <div class="form-group">
+      <label for="projects_description">Описание проекта</label>
+      {{=form_project.custom.widget.description}}
+    </div>
+    <div class="form-group">
+      <label for="projects_notes">Примечания</label>
+      {{=form_project.custom.widget.notes}}
+    </div>
+    <div class="form-group">
+      <label for="projects_sla_hours">SLA - максимальное время в статусе (часы)</label>
+      {{=form_project.custom.widget.sla_hours}}
+    </div>
+    <div class="form-group">
+      {{=form_project.custom.submit}}
+      <button type="button" class="btn btn-secondary btn-block mt-2" onclick="closeProjectSidebar()">Отмена</button>
+    </div>
+    {{=form_project.custom.end}}
+  </div>
+</div>
+
+<script>
+// Функция маски ввода телефона +7 (XXX) XXX-XX-XX
+function applyPhoneMask(input) {
+  if (!input) return;
+  
+  input.addEventListener('input', function(e) {
+    var value = e.target.value.replace(/\D/g, ''); // Удаляем все нецифровые символы
+    
+    if (value.length > 0) {
+      if (value[0] === '8') {
+        value = '7' + value.substring(1); // Заменяем 8 на 7
+      }
+      if (value[0] !== '7') {
+        value = '7' + value; // Добавляем 7 если его нет
+      }
+      
+      var formatted = '+7';
+      if (value.length > 1) {
+        formatted += ' (' + value.substring(1, 4);
+        if (value.length > 4) {
+          formatted += ') ' + value.substring(4, 7);
+          if (value.length > 7) {
+            formatted += '-' + value.substring(7, 9);
+            if (value.length > 9) {
+              formatted += '-' + value.substring(9, 11);
+            }
+          }
+        }
+      }
+      e.target.value = formatted;
+    }
+  });
+  
+  input.addEventListener('keydown', function(e) {
+    // Разрешаем удаление, backspace, tab, escape, enter
+    if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+        // Разрешаем Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (e.keyCode === 65 && e.ctrlKey === true) ||
+        (e.keyCode === 67 && e.ctrlKey === true) ||
+        (e.keyCode === 86 && e.ctrlKey === true) ||
+        (e.keyCode === 88 && e.ctrlKey === true) ||
+        // Разрешаем home, end, left, right
+        (e.keyCode >= 35 && e.keyCode <= 39)) {
+      return;
+    }
+    // Запрещаем ввод если уже 18 символов (максимальная длина +7 (XXX) XXX-XX-XX)
+    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+      e.preventDefault();
+    }
+  });
+  
+  input.addEventListener('focus', function(e) {
+    if (!e.target.value) {
+      e.target.value = '+7 (';
+    }
+  });
+}
+
+// Применяем маску к полям телефона при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+  var phoneInputs = document.querySelectorAll('input[name="phone"], input[id*="phone"], input[id*="Phone"]');
+  phoneInputs.forEach(function(input) {
+    applyPhoneMask(input);
+  });
+});
+
+// Функция проверки дубликата телефона
+function checkPhoneDuplicate(input, customerId) {
+  var phone = input.value.trim();
+  if (!phone || phone.length < 5) {
+    // Убираем сообщение об ошибке если поле пустое или слишком короткое
+    var existingAlert = input.parentElement.querySelector('.phone-duplicate-alert');
+    if (existingAlert) {
+      existingAlert.remove();
+    }
+    // Активируем кнопку отправки
+    enableSubmitButton(input);
+    return;
+  }
+  
+  // Отправляем AJAX запрос для проверки
+  var url = '{{=URL("customers", "check_phone_duplicate")}}';
+  var params = 'phone=' + encodeURIComponent(phone);
+  if (customerId) {
+    params += '&customer_id=' + encodeURIComponent(customerId);
+  }
+  
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url + '?' + params, true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        try {
+          var response = JSON.parse(xhr.responseText);
+          var existingAlert = input.parentElement.querySelector('.phone-duplicate-alert');
+          
+          if (response.exists) {
+            if (!existingAlert) {
+              var alertDiv = document.createElement('div');
+              alertDiv.className = 'alert alert-warning phone-duplicate-alert mt-2';
+              alertDiv.style.fontSize = '0.875rem';
+              alertDiv.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i>' + response.message;
+              input.parentElement.appendChild(alertDiv);
+            }
+            // Деактивируем кнопку отправки при обнаружении дубликата (только для формы добавления)
+            if (!customerId) {
+              disableSubmitButton(input);
+            }
+          } else {
+            if (existingAlert) {
+              existingAlert.remove();
+            }
+            // Активируем кнопку отправки если дубликат не найден
+            enableSubmitButton(input);
+          }
+        } catch (e) {
+          console.error('Ошибка при обработке ответа:', e);
+          enableSubmitButton(input);
+        }
+      }
+    }
+  };
+  xhr.send();
+}
+
+// Функция для деактивации кнопки отправки
+function disableSubmitButton(input) {
+  var form = input.closest('form');
+  if (form) {
+    var submitButton = form.querySelector('input[type="submit"], button[type="submit"]');
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.classList.add('disabled');
+      submitButton.style.opacity = '0.6';
+      submitButton.style.cursor = 'not-allowed';
+    }
+  }
+}
+
+// Функция для активации кнопки отправки
+function enableSubmitButton(input) {
+  var form = input.closest('form');
+  if (form) {
+    var submitButton = form.querySelector('input[type="submit"], button[type="submit"]');
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.classList.remove('disabled');
+      submitButton.style.opacity = '1';
+      submitButton.style.cursor = 'pointer';
+    }
+  }
+}
+
+// Применяем маску к полям телефона в панелях (когда они открываются)
+function applyPhoneMaskToPanels() {
+  setTimeout(function() {
+    var phoneInputs = document.querySelectorAll('#customerEditSidebar input[name="phone"], input[id*="phone"], input[id*="Phone"]');
+    phoneInputs.forEach(function(input) {
+      if (!input.dataset.maskApplied) {
+        applyPhoneMask(input);
+        input.dataset.maskApplied = 'true';
+        
+        // Добавляем проверку дубликата при выходе из поля
+        input.addEventListener('blur', function() {
+          // Получаем ID клиента из формы редактирования
+          var customerId = null;
+          var form = input.closest('form');
+          if (form) {
+            // Пытаемся найти скрытое поле с ID клиента
+            var hiddenId = form.querySelector('input[name="customer_id"], input[id="edit_customer_id"], input[name="id"], input[type="hidden"][name*="id"]');
+            if (hiddenId && hiddenId.value) {
+              customerId = hiddenId.value;
+            } else {
+              // Пытаемся получить из URL (args[0])
+              var urlParts = window.location.pathname.split('/');
+              var customerIndex = urlParts.indexOf('customer');
+              if (customerIndex !== -1 && urlParts[customerIndex + 1]) {
+                customerId = urlParts[customerIndex + 1];
+              }
+            }
+          }
+          checkPhoneDuplicate(input, customerId);
+        });
+        
+        // Также проверяем при изменении значения (для более быстрой обратной связи)
+        input.addEventListener('input', function() {
+          // Убираем предупреждение и активируем кнопку при изменении
+          var existingAlert = input.parentElement.querySelector('.phone-duplicate-alert');
+          if (existingAlert) {
+            existingAlert.remove();
+            enableSubmitButton(input);
+          }
+        });
+      }
+    });
+  }, 100);
+}
+
+function openProjectSidebar() {
+  document.getElementById('projectSidebar').classList.add('open');
+  document.getElementById('projectSidebarOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProjectSidebar() {
+  document.getElementById('projectSidebar').classList.remove('open');
+  document.getElementById('projectSidebarOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function openCustomerEditPanel() { 
+  var ov = document.getElementById('customerEditOverlay'); 
+  var panel = document.getElementById('customerEditSidebar'); 
+  if (ov) ov.classList.add('show'); 
+  if (panel) panel.classList.add('open'); 
+  document.body.style.overflow = 'hidden';
+  applyPhoneMaskToPanels();
+}
+function closeCustomerEditPanel() { 
+  var ov = document.getElementById('customerEditOverlay'); 
+  var panel = document.getElementById('customerEditSidebar'); 
+  if (ov) ov.classList.remove('show'); 
+  if (panel) panel.classList.remove('open'); 
+  document.body.style.overflow = ''; 
+}
+{{if show_edit_panel:}}
+(function(){ 
+  var ov = document.getElementById('customerEditOverlay'); 
+  var panel = document.getElementById('customerEditSidebar'); 
+  if (panel && ov) { 
+    panel.classList.add('open'); 
+    ov.classList.add('show'); 
+    document.body.style.overflow = 'hidden';
+    applyPhoneMaskToPanels();
+  } 
+})();
+{{pass}}
+
+// Закрытие по ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeProjectSidebar();
+    closeCustomerEditPanel();
+  }
+});
+</script>
+
+{{if form_edit:}}
+<style>
+.customer-edit-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.5); z-index: 1040; display: none; }
+.customer-edit-overlay.show { display: block; }
+.customer-edit-sidebar { position: fixed; top: 0; right: -420px; width: 420px; max-width: 100vw; height: 100vh; background: var(--bs-body-bg); box-shadow: -2px 0 12px rgba(0,0,0,.15); transition: right 0.3s ease; z-index: 1050; overflow-y: auto; display: flex; flex-direction: column; }
+.customer-edit-sidebar.open { right: 0; }
+.customer-edit-sidebar .sidebar-header { padding: 1rem; border-bottom: 1px solid var(--bs-border-color); background: var(--bs-primary); color: #fff; }
+.customer-edit-sidebar .sidebar-body { padding: 1rem; flex: 1; overflow-y: auto; }
+</style>
+<div class="customer-edit-overlay" id="customerEditOverlay" onclick="closeCustomerEditPanel()"></div>
+<div class="customer-edit-sidebar {{='open' if show_edit_panel else ''}}" id="customerEditSidebar">
+  <div class="sidebar-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 text-white"><i class="bi bi-pencil me-2"></i> Редактирование клиента</h5>
+    <button type="button" class="btn btn-light btn-sm" onclick="closeCustomerEditPanel()"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div class="sidebar-body">
+    {{=form_edit.custom.begin}}
+    {{if customer and customer.id:}}
+    <input type="hidden" name="customer_id" id="edit_customer_id" value="{{=customer.id}}">
+    {{pass}}
+    {{if form_edit.errors:}}
+    <div class="alert alert-danger">
+      <strong>Ошибки:</strong>
+      <ul class="mb-0">{{for field, error in form_edit.errors.items():}}<li>{{=field}}: {{=error}}</li>{{pass}}</ul>
+    </div>
+    {{pass}}
+    <div class="mb-3"><label class="form-label">Имя <span class="text-danger">*</span></label>{{=form_edit.custom.widget.name}}</div>
+    <div class="mb-3"><label class="form-label">Отчество</label>{{=form_edit.custom.widget.middle_name}}</div>
+    <div class="mb-3"><label class="form-label">Фамилия</label>{{=form_edit.custom.widget.last_name}}</div>
+    <div class="mb-3"><label class="form-label">Телефон <span class="text-danger">*</span></label>{{=form_edit.custom.widget.phone}}</div>
+    <div class="mb-3"><label class="form-label">Email</label>{{=form_edit.custom.widget.email}}</div>
+    <div class="mb-3"><label class="form-label">Адрес <span class="text-danger">*</span></label>{{=form_edit.custom.widget.address}}</div>
+    <div class="mb-3"><label class="form-label">Источник лида</label>{{=form_edit.custom.widget.lead_source_id}}</div>
+    <div class="mb-3"><label class="form-label">Ссылка</label>{{=form_edit.custom.widget.link}}</div>
+    <div class="mb-3"><label class="form-label">Примечания</label>{{=form_edit.custom.widget.notes}}</div>
+    <div class="mb-3"><label class="form-label">Комментарии</label>{{=form_edit.custom.widget.comments}}</div>
+    <div class="mb-3">{{=form_edit.custom.submit}}<button type="button" class="btn btn-secondary w-100 mt-2" onclick="closeCustomerEditPanel()">Отмена</button></div>
+    {{=form_edit.custom.end}}
+  </div>
+</div>
+{{pass}}

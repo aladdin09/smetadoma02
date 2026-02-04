@@ -1,0 +1,117 @@
+{{extend 'layout_gentelella_bs5.html'}}
+
+{{block header}}
+<div class="jumbotron jumbotron-fluid" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:40px;">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="display-4"><i class="bi bi-user-plus"></i> Добавление клиента</h1>
+      </div>
+      <div>
+        <a href="{{=URL('default', 'index')}}" class="btn btn-light btn-lg">
+          <i class="bi bi-arrow-left"></i> Назад к дашборду
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+
+<style>
+/* Sidebar стили */
+body {
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(100% - 500px);
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1040;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 500px;
+  height: 100vh;
+  background: white;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+  z-index: 1050;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid #dee2e6;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.sidebar-body {
+  padding: 20px;
+}
+</style>
+
+<!-- Sidebar для добавления клиента -->
+<div class="sidebar" id="customerSidebar">
+  <div class="sidebar-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4 class="mb-0"><i class="bi bi-user-plus"></i> Добавление клиента</h4>
+      <a href="{{=URL('default', 'index')}}" class="btn btn-light btn-sm">
+        <i class="bi bi-times"></i>
+      </a>
+    </div>
+  </div>
+  <div class="sidebar-body">
+    {{=form.custom.begin}}
+    {{if form.errors:}}
+    <div class="alert alert-danger">
+      <strong>Ошибки:</strong>
+      <ul class="mb-0">
+        {{for field, error in form.errors.items():}}
+        <li>{{=field}}: {{=error}}</li>
+        {{pass}}
+      </ul>
+    </div>
+    {{pass}}
+    <div class="form-group">
+      <label for="customers_name">Имя клиента <span class="text-danger">*</span></label>
+      {{=form.custom.widget.name}}
+    </div>
+    <div class="form-group">
+      <label for="customers_phone">Телефон</label>
+      {{=form.custom.widget.phone}}
+    </div>
+    <div class="form-group">
+      <label for="customers_email">Email</label>
+      {{=form.custom.widget.email}}
+    </div>
+    <div class="form-group">
+      <label for="customers_address">Адрес</label>
+      {{=form.custom.widget.address}}
+    </div>
+    <div class="form-group">
+      <label for="customers_notes">Примечания</label>
+      {{=form.custom.widget.notes}}
+    </div>
+    <div class="form-group">
+      {{=form.custom.submit}}
+      <a href="{{=URL('default', 'index')}}" class="btn btn-secondary btn-block mt-2">Отмена</a>
+    </div>
+    {{=form.custom.end}}
+  </div>
+</div>
+
+<script>
+// Автоматически открываем sidebar при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('customerSidebar').style.right = '0';
+  document.body.style.overflow = 'hidden';
+});
+</script>

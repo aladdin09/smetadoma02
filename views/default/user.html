@@ -1,0 +1,58 @@
+{{extend 'layout_login.html' if request.args(0)=='login' else 'layout_gentelella_bs5.html'}}
+{{if request.args(0)=='login':}}
+{{block content}}
+<div class="login_wrapper">
+  <div class="login_content">
+    <h1><i class="bi bi-box-arrow-in-right me-2"></i>{{=T('Вход')}}</h1>
+    {{if response.flash:}}
+    <div id="loginFlash" class="alert alert-danger mb-3" role="alert">{{=response.flash}}</div>
+    {{pass}}
+    {{=form}}
+    {{if not 'retrieve_password' in auth.settings.actions_disabled:}}
+    <div class="mt-2">
+      <a class="reset_pass" href="{{=URL('default', 'user', args=['retrieve_password'])}}">{{=T('Забыли пароль?')}}</a>
+    </div>
+    {{pass}}
+    <div class="separator">
+      <div class="brand mt-3">
+        <h2 class="h5 mb-1"><i class="bi bi-speedometer2"></i> {{=request.application}}</h2>
+        <p class="small text-muted mb-0">© {{=request.now.year}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+{{else:}}
+<div class="row">
+  <div id="web2py_user_form" class="col-lg-6" style="background-color:white; margin: 0 auto 5px auto; box-shadow: 0 0 5px #a1a1a1; border-radius:5px;padding: 20px">
+    <h2>
+      {{=T('Sign Up') if request.args(0) == 'register' else T('Log In') if request.args(0) == 'login' else T(request.args(0).replace('_',' ').title())}}
+    </h2>
+    {{=form}}
+    {{if request.args(0)=='login' and not 'register' in auth.settings.actions_disabled:}}
+    <a href="{{=URL('default', 'user', args=['register'])}}">{{=T('Register')}}</a>
+    <br/>
+    {{pass}}
+    {{if request.args(0)=='login' and not 'retrieve_password' in auth.settings.actions_disabled:}}
+    <a href="{{=URL('default', 'user', args=['retrieve_password'])}}">{{=T('Lost your password?')}}</a>
+    {{pass}}
+    {{if request.args(0)=='register':}}
+    <a href="{{=URL('default', 'user', args=['login'])}}">{{=T('Login')}}</a>
+    {{pass}}
+  </div>
+</div>
+{{pass}}
+
+{{block page_js}}
+<script>
+    jQuery("#web2py_user_form input:visible:enabled:first, .login_content input:visible:enabled:first").focus();
+{{if request.args(0)=='login':}}
+    (function(){ var el = document.getElementById('loginFlash'); if(el) setTimeout(function(){ el.style.transition = 'opacity 0.3s'; el.style.opacity = '0'; setTimeout(function(){ el.remove(); }, 300); }, 5000); })();
+{{pass}}
+{{if request.args(0)=='register':}}
+    web2py_validate_entropy(jQuery('#auth_user_password'),100);
+{{elif request.args(0)=='change_password':}}
+    web2py_validate_entropy(jQuery('#no_table_new_password'),100);
+{{pass}}
+</script>
+{{end page_js}}

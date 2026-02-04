@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{=T.accepted_language or 'en'}}"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <!-- www.phpied.com/conditional-comments-block-downloads/ -->
+    <!-- Always force latest IE rendering engine
+         (even in intranet) & Chrome Frame
+         Remove this if you use the .htaccess -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge{{=not request.is_local and ',chrome=1' or ''}}">
+    <!--  Mobile Viewport Fix
+          j.mp/mobileviewport & davidbcalhoun.com/2010/viewport-metatag
+          device-width: Occupy full width of the screen in its current orientation
+          initial-scale = 1.0 retains dimensions instead of zooming out if page height > device height
+          user-scalable = yes allows the user to zoom in -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{=response.title or request.application}}</title>
+    <!-- http://dev.w3.org/html5/markup/meta.name.html -->
+    <meta name="application-name" content="{{=request.application}}">
+    <!-- Speaking of Google, don't forget to set your site up:
+         http://google.com/webmasters -->
+    <meta name="google-site-verification" content="">
+    <!-- Vuexy template styles (static/vuexy) -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <!-- BEGIN: Vendor CSS -->
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','vuexy/app-assets/vendors/css/vendors.min.css')}}">
+    <!-- END: Vendor CSS -->
+    <!-- BEGIN: Theme CSS -->
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','vuexy/app-assets/css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','vuexy/app-assets/css/bootstrap-extended.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','vuexy/app-assets/css/colors.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','vuexy/app-assets/css/components.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','vuexy/app-assets/css/themes/dark-layout.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','vuexy/app-assets/css/themes/bordered-layout.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','vuexy/app-assets/css/themes/semi-dark-layout.css')}}">
+    <!-- BEGIN: Page CSS (horizontal menu) -->
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','vuexy/app-assets/css/core/menu/menu-types/horizontal-menu.css')}}">
+    <!-- END: Page CSS -->
+    <!-- BEGIN: Custom CSS (Vuexy) -->
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','vuexy/assets/css/style.css')}}">
+    <!-- END: Custom CSS -->
+    <!-- Vuexy: палитра + доработки шапки и меню -->
+    <style>
+    html, body { overflow-x: hidden; overflow-y: auto; }
+    .table-responsive { max-height: none !important; overflow: visible !important; }
+    /* Шапка — Vuexy primary #7367f0, прижата к верху страницы */
+    .header-navbar { background-color: #7367f0 !important; box-shadow: 0 4px 24px 0 rgba(115, 103, 240, 0.25); margin: 0; margin-top: 20px !important; }
+    .header-navbar[data-nav="brand-center"],
+    nav[data-nav="brand-center"] {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0;
+        right: 0;
+        z-index: 1030;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    .header-navbar .navbar-header .brand-text,
+    .header-navbar .navbar-container .nav-link { color: rgba(255,255,255,.9) !important; }
+    .header-navbar .navbar-container .nav-link:hover,
+    .header-navbar .navbar-container .nav-link:focus { color: #fff !important; background: rgba(255,255,255,.1); border-radius: .25rem; }
+    .header-navbar .navbar-container .nav-link.active { background: rgba(255,255,255,.15); color: #fff !important; border-radius: .25rem; }
+    .header-navbar .navbar-container .dropdown-menu { border-radius: .25rem; }
+    .header-navbar .navbar-container .dropdown-user-link .user-name,
+    .header-navbar .navbar-container .dropdown-user-link .user-status,
+    .header-navbar .navbar-container .dropdown-user-link .avatar { color: rgba(255,255,255,.9) !important; }
+    .header-navbar .navbar-container .dropdown-user-link .avatar i { color: rgba(255,255,255,.9); }
+    .header-navbar .navbar-container .dropdown:hover .dropdown-menu,
+    .header-navbar .navbar-container .dropdown.show .dropdown-menu { display: block; }
+    /* Jumbotron — градиент Vuexy primary, ширина как у body (2rem по бокам) */
+    .page-header-mini .jumbotron-fluid {
+        background: linear-gradient(135deg, #7367f0 0%, #5e50ee 100%) !important;
+        color: #fff !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+    .page-header-mini .jumbotron-fluid .container {
+        max-width: none;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    /* Заголовок карточки по умолчанию — Vuexy primary */
+    .card .card-header:not([class*="bg-"]) {
+        background-color: #7367f0 !important;
+        border-color: #7367f0;
+        color: #fff !important;
+    }
+    /* navbar-container — шире (1rem по бокам), прижат к верху страницы */
+    .horizontal-menu .header-navbar .navbar-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 0;
+        padding-bottom: 0.8rem;
+    }
+    .horizontal-menu .header-navbar .navbar-container.d-flex.content {
+        align-items: flex-start;
+    }
+    /* navbar-container d-flex content w-100 — закрепить у верха */
+    .header-navbar .navbar-container.d-flex.content.w-100 {
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+    }
+    /* html .content.app-content — верх 20px везде */
+    html .content.app-content {
+        padding: 20px 2rem 0 2rem !important;
+    }
+    .horizontal-layout.navbar-floating .app-content {
+        padding: 20px 2rem 0 2rem;
+    }
+    .horizontal-layout .footer {
+        padding: 1rem 2rem;
+    }
+    /* data-menu="menu-wrapper" — опустить на 40px */
+    [data-menu="menu-wrapper"] {
+        margin-top: 40px;
+    }
+    /* Утилита: верхний отступ 40px */
+    .erp-margin-top-40 {
+        margin-top: 40px;
+    }
+    /* Утилита: верхний отступ 60px */
+    .erp-margin-top-60 {
+        margin-top: 60px;
+    }
+    /* Утилита: верхний отступ 120px */
+    .erp-margin-top-120 {
+        margin-top: 120px;
+    }
+    /* Утилита: верхний отступ 140px */
+    .erp-margin-top-140 {
+        margin-top: 140px;
+    }
+    /* Убрать верхний отступ при pace-done (Pace.js) */
+    body.pace-done,
+    html.pace-done body {
+        margin-top: 0 !important;
+        
+    }
+    </style>
+    <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
+    <!-- All JavaScript at the bottom, except for Modernizr which enables
+         HTML5 elements & feature detects -->
+    <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
+    <!-- Favicons -->
+    {{include 'web2py_ajax.html'}} <!-- this includes jquery.js, calendar.js/.css and web2py.js -->
+
+    {{block head}}
+    
+    
+    {{end}}
+  
+  </head>
+  <body class="has-navigator">
+  {{include 'navigator.html'}}
+
+    <!-- Main content (Vuexy: app-content с отступами 2rem) -->
+    <div class="app-content ">
+      {{include}}
+      {{=response.toolbar() if response.show_toolbar else ''}}
+    </div>
+
+    {{block footer}} <!-- this is default footer -->
+    <footer class="footer">
+      <div class="row">
+        <div class="col-12">
+          <div class="copyright float-start">{{=T('Copyright')}} &#169; {{=request.now.year}}</div>
+          <div id="poweredBy" class="float-end">
+            {{=T('Powered by')}}
+            <a href="http://www.web2py.com/">web2py</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    {{end}}
+    <!-- Bootstrap 5 (Vuexy) -->
+    <script src="{{=URL('static','vuexy/app-assets/vendors/js/vendors.min.js')}}"></script>
+    <script src="{{=URL('static','js/web2py-bootstrap4.js')}}"></script>
+    {{block page_js}}{{end page_js}}
+    {{if response.google_analytics_id:}}
+    <!-- Analytics ==================================== -->
+    <script src="{{=URL('static','js/analytics.min.js')}}"></script>
+    <script type="text/javascript">
+      analytics.initialize({
+      'Google Analytics':{trackingId:'{{=response.google_analytics_id}}'}
+      });
+    </script>
+    {{pass}}
+  </body>
+</html>

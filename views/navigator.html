@@ -1,0 +1,143 @@
+<!-- Панели меню: два верхних горизонтальных меню (закреплённые). При включении в layout добавьте body класс has-navigator для отступа контента. -->
+<style>
+.navigator-panel { position: fixed; left: 0; right: 0; z-index: 1030; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+.navigator-panel.navigator-panel-1 { top: 0; }
+.navigator-panel.navigator-panel-2 { top: calc(56px + 20px); } /* 56px — высота панели 1, 20px — расстояние между панелями */
+.navigator-panel .navbar { padding: 0.5rem 1rem; }
+.navigator-panel .dropdown { position: relative; }
+.navigator-panel .dropdown-menu { z-index: 1050; display: none; position: absolute; }
+.navigator-panel .dropdown:hover .dropdown-menu,
+.navigator-panel .dropdown.show .dropdown-menu { display: block !important; }
+@media (max-width: 991.98px) {
+  .navigator-panel .navbar-collapse.collapse { display: none !important; }
+  .navigator-panel .navbar-collapse.collapse.show { display: flex !important; }
+}
+@media (min-width: 992px) {
+  .navigator-panel .navbar-collapse.collapse { display: flex !important; }
+}
+body.has-navigator { padding-top: 132px; }
+</style>
+
+<!-- Верхнее меню 1 (закреплено у top: 0) -->
+<nav class="navigator-panel navigator-panel-1 navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{=URL('default','index')}}">{{=request.application or 'CRM'}}</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navPanel1" aria-controls="navPanel1" aria-expanded="false" aria-label="Меню">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navPanel1">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{=URL('default','index')}}"><i class="fa fa-dashboard"></i> Дашборд</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button" data-bs-toggle="dropdown" aria-expanded="false">Дашборды</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{=URL('default','index')}}">Главная</a></li>
+            <li><a class="dropdown-item" href="{{=URL('dashboard_main','index_gentelella')}}">Главный (Gentelella)</a></li>
+            <li><a class="dropdown-item" href="{{=URL('dashboard_main','index_gentelella_bs5')}}">Главный (Gentelella B5)</a></li>
+            <li><a class="dropdown-item" href="{{=URL('dashboard_main','index_deskapp')}}">Главный (DeskApp)</a></li>
+            <li><a class="dropdown-item" href="{{=URL('dashboard_analytics','index')}}">Аналитика</a></li>
+            <li><a class="dropdown-item" href="{{=URL('dashboard_overview','index')}}">Обзор</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{=URL('projects','view')}}">Проекты</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Верхнее меню 2 (закреплено под первым) -->
+<nav class="navigator-panel navigator-panel-2 navbar navbar-expand-lg navbar-light bg-light border-bottom">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navPanel2" aria-controls="navPanel2" aria-expanded="false" aria-label="Меню 2">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navPanel2">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{=URL('customers','customers_list')}}"><i class="fa fa-users"></i> Клиенты</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{=URL('orders','view')}}"><i class="fa fa-shopping-cart"></i> Заказы</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{=URL('specifications','view_specification')}}"><i class="fa fa-cubes"></i> Спецификации</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-dashboard"></i> Дашборды</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{=URL('default','index')}}">Главная</a></li>
+            <li><a class="dropdown-item" href="{{=URL('dashboard_main','index_gentelella')}}">Главный (Gentelella)</a></li>
+            <li><a class="dropdown-item" href="{{=URL('dashboard_main','index_gentelella_bs5')}}">Главный (Gentelella B5)</a></li>
+            <li><a class="dropdown-item" href="{{=URL('dashboard_main','index_deskapp')}}">Главный (DeskApp)</a></li>
+            <li><a class="dropdown-item" href="{{=URL('dashboard_analytics','index')}}">Аналитика</a></li>
+            <li><a class="dropdown-item" href="{{=URL('dashboard_overview','index')}}">Обзор</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-cog"></i> Настройки</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{=URL('project_statuses','list')}}">Статусы проектов</a></li>
+            <li><a class="dropdown-item" href="{{=URL('request_statuses','list')}}">Статусы заявок</a></li>
+            <li><a class="dropdown-item" href="{{=URL('specification_statuses','list')}}">Статусы спецификаций</a></li>
+            <li><a class="dropdown-item" href="{{=URL('user_roles','list')}}">Роли</a></li>
+            <li><a class="dropdown-item" href="{{=URL('branches','list')}}">Филиалы</a></li>
+            <li><a class="dropdown-item" href="{{=URL('users','list')}}">Пользователи</a></li>
+            <li><a class="dropdown-item" href="{{=URL('statuses','list')}}">Статусы</a></li>
+            <li><a class="dropdown-item" href="{{=URL('nomenclature_item_types','list')}}">Типы позиций номенклатуры</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="javascript:void(0)" role="button" data-bs-toggle="dropdown" aria-expanded="false">Справочники</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{=URL('nomenclature_items','list')}}">Номенклатура</a></li>
+            <li><a class="dropdown-item" href="{{=URL('project_statuses','list')}}">Статусы проектов</a></li>
+            <li><a class="dropdown-item" href="{{=URL('request_statuses','list')}}">Статусы заявок</a></li>
+            <li><a class="dropdown-item" href="{{=URL('specification_statuses','list')}}">Статусы спецификаций</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<script>
+(function() {
+  function initNavigatorMenu() {
+    document.addEventListener('click', function(e) {
+      var toggle = e.target.closest('.navigator-panel [data-bs-toggle="dropdown"]');
+      if (toggle) {
+        e.preventDefault();
+        e.stopPropagation();
+        var drop = toggle.closest('.dropdown');
+        var wasOpen = drop && drop.classList.contains('show');
+        document.querySelectorAll('.navigator-panel .dropdown.show').forEach(function(d) { d.classList.remove('show'); });
+        if (drop && !wasOpen) drop.classList.add('show');
+        return;
+      }
+      var tog = e.target.closest('.navigator-panel .navbar-toggler[data-bs-target]');
+      if (tog) {
+        e.preventDefault();
+        var id = tog.getAttribute('data-bs-target');
+        if (id) {
+          var el = document.querySelector(id);
+          if (el) el.classList.toggle('show');
+          tog.setAttribute('aria-expanded', el && el.classList.contains('show'));
+        }
+        return;
+      }
+      if (!e.target.closest('.navigator-panel .dropdown')) {
+        document.querySelectorAll('.navigator-panel .dropdown.show').forEach(function(d) { d.classList.remove('show'); });
+      }
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavigatorMenu);
+  } else {
+    initNavigatorMenu();
+  }
+})();
+</script>

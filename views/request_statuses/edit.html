@@ -1,0 +1,39 @@
+{{extend 'layout_gentelella_bs5.html'}}
+
+{{block header}}
+<div class="jumbotron jumbotron-fluid" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:40px;">
+  <div class="container">
+    <h1 class="display-4"><i class="bi bi-edit"></i> Редактирование статуса заявки</h1>
+    <p class="lead">Изменение данных статуса заявки: {{=status.name}}</p>
+  </div>
+</div>
+{{end}}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0"><i class="bi bi-edit"></i> Форма редактирования статуса заявки</h5>
+                </div>
+                <div class="card-body">
+                    {{=form}}
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="{{=URL('request_statuses', 'list')}}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Назад к списку
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    margin-top: 20px;
+}
+.form-group {
+    margin-bottom: 1rem;
+}
+</style>

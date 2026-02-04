@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Спецификация — пример</title>
+<style>
+    body { font-family: Arial; margin: 20px; }
+    .card { border: 1px solid #ccc; border-radius: 6px; margin-bottom: 20px; }
+    .card-header { background: #f5f5f5; padding: 10px; font-weight: bold; }
+    .card-body { padding: 10px; }
+    .req-item { border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; }
+    .btn { padding: 6px 12px; border-radius: 4px; cursor: pointer; border: none; }
+    .btn-primary { background: #007bff; color: white; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-danger { background: #dc3545; color: white; }
+    .btn-sm { padding: 4px 8px; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 6px; border-bottom: 1px solid #ddd; }
+</style>
+</head>
+<body>
+
+<h2>Спецификация — Крыша</h2>
+
+<!-- Блок 1. Обязательные позиции -->
+<div class="card">
+    <div class="card-header">Обязательные элементы</div>
+    <div class="card-body" id="requiredList"></div>
+</div>
+
+<!-- Блок 2. Выбор материала -->
+<div class="card" id="materialSelector" style="display:none;">
+    <div class="card-header" id="materialSelectorTitle">Материал</div>
+    <div class="card-body">
+        <label>Материал:</label>
+        <select id="materialOptions" class="form-select" style="width:100%; padding:6px; margin-bottom:10px;"></select>
+
+        <label>Количество:</label>
+        <input type="number" id="materialQty" min="1" style="width:100%; padding:6px; margin-bottom:10px;">
+
+        <button class="btn btn-success" onclick="addMaterial()">Добавить</button>
+    </div>
+</div>
+
+<!-- Блок 3. Добавленные позиции -->
+<div class="card">
+    <div class="card-header">Добавленные позиции</div>
+    <div class="card-body">
+        <table id="itemsTable">
+            <thead>
+                <tr>
+                    <th>Материал</th>
+                    <th>Кол-во</th>
+                    <th>Обязательная позиция</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="itemsBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Блок 4. Итог по материалам -->
+<div class="card">
+    <div class="card-header">Итог по материалам</div>
+    <div class="card-body" id="summary"></div>
+</div>
+
+<script>
+// ---------------------- ТЕСТОВЫЕ ДАННЫЕ ----------------------
+
+const requiredItems = [
+    { id: 1, name: "Обрешётка", required_qty: 10, added_qty: 0, materials: [
+        { id: 101, name: "Доска 50×100" },
+        { id: 102, name: "Доска 25×50" },
+        { id: 103, name: "Доска 40×100" }
+    ]},
+    { id: 2, name: "Стропильная система", required_qty: 5, added_qty: 0, materials: [
+        { id: 104, name: "Доска 50×150" },
+        { id: 105, name: "Брус 100×150" }
+    ]},
+    { id: 3, name: "Карниз", required_qty: 3, added_qty: 0, materials: [
+        { id: 106, name: "Доска 25×100" }
+    ]}
+];
+
+let specItems = []; // сюда будут добавляться позиции
+let currentRequiredId = null;
+
+// ---------------------- ОТОБРАЖЕНИЕ ОБЯЗАТЕЛЬНЫХ ----------------------
+
+function renderRequired() {
+    const box = document.getElementById("requiredList");
+    box.innerHTML = "";
+
+    requiredItems.forEach(req => {
+        const div = document.createElement("div");
+        div.className = "req-item";
+        div.innerHTML = `
+            <div>
+                <strong>${req.name}</strong><br>
+                Требуется: ${req.required_qty}<br>
+                Добавлено: ${req.added_qty}
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openMaterialSelector(${req.id})">
+                Выбрать материал
+            </button>
+        `;
+        box.appendChild(div);
+    });
+}
+
+// ---------------------- ОТКРЫТИЕ ВЫБОРА МАТЕРИАЛА ----------------------
+
+function openMaterialSelector(requiredId) {
+    currentRequiredId = requiredId;
+
+    const req = requiredItems.find(r => r.id === requiredId);
+
+    document.getElementById("materialSelectorTitle").innerText =
+        "Материал для: " + req.name;
+
+    const select = document.getElementById("materialOptions");
+    select.innerHTML = "";
+
+    req.materials.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = m.name;
+        select.appendChild(opt);
+    });
+
+    document.getElementById("materialSelector").style.display = "block";
+}
+
+// ---------------------- ДОБАВЛЕНИЕ ПОЗИЦИИ ----------------------
+
+function addMaterial() {
+    const qty = parseInt(document.getElementById("materialQty").value);
+    if (!qty || qty <= 0) return alert("Введите количество");
+
+    const req = requiredItems.find(r => r.id === currentRequiredId);
+    const matId = parseInt(document.getElementById("materialOptions").value);
+    const mat = req.materials.find(m => m.id === matId);
+
+    specItems.push({
+        material_id: mat.id,
+        material_name: mat.name,
+        qty: qty,
+        required_name: req.name
+    });
+
+    req.added_qty += qty;
+
+    renderRequired();
+    renderItems();
+    renderSummary();
+
+    document.getElementById("materialQty").value = "";
+}
+
+// ---------------------- ОТОБРАЖЕНИЕ ПОЗИЦИЙ ----------------------
+
+function renderItems() {
+    const body = document.getElementById("itemsBody");
+    body.innerHTML = "";
+
+    specItems.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${item.material_name}</td>
+            <td>${item.qty}</td>
+            <td>${item.required_name}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteItem(${index})">×</button></td>
+        `;
+        body.appendChild(tr);
+    });
+}
+
+// ---------------------- УДАЛЕНИЕ ПОЗИЦИИ ----------------------
+
+function deleteItem(index) {
+    const item = specItems[index];
+    const req = requiredItems.find(r => r.name === item.required_name);
+    req.added_qty -= item.qty;
+
+    specItems.splice(index, 1);
+
+    renderRequired();
+    renderItems();
+    renderSummary();
+}
+
+// ---------------------- ИТОГ ПО МАТЕРИАЛАМ ----------------------
+
+function renderSummary() {
+    const box = document.getElementById("summary");
+    box.innerHTML = "";
+
+    const totals = {};
+
+    specItems.forEach(item => {
+        if (!totals[item.material_name]) totals[item.material_name] = 0;
+        totals[item.material_name] += item.qty;
+    });
+
+    for (let name in totals) {
+        const div = document.createElement("div");
+        div.innerHTML = `${name}: <strong>${totals[name]}</strong>`;
+        box.appendChild(div);
+    }
+}
+
+// ---------------------- ИНИЦИАЛИЗАЦИЯ ----------------------
+
+renderRequired();
+renderItems();
+renderSummary();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+{{extend 'layout_login.html'}}
+{{block content}}
+<div class="login_wrapper">
+  <div class="login_content">
+    <h1><i class="bi bi-person-plus me-2"></i>Первоначальная настройка</h1>
+    <p class="text-muted small mb-3">В системе ещё нет пользователей. Создайте первого пользователя (рекомендуется роль Admin).</p>
+    {{if response.flash:}}
+    <div id="firstRunFlash" class="alert alert-danger mb-3" role="alert">{{=response.flash}}</div>
+    {{pass}}
+    {{=form}}
+    <div class="separator">
+      <div class="brand mt-3">
+        <h2 class="h5 mb-1"><i class="bi bi-speedometer2"></i> {{=request.application}}</h2>
+        <p class="small text-muted mb-0">© {{=request.now.year}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+{{block page_js}}
+<script>
+  jQuery(".login_content input:visible:enabled:first").focus();
+  (function(){ var el = document.getElementById('firstRunFlash'); if(el) setTimeout(function(){ el.style.transition = 'opacity 0.3s'; el.style.opacity = '0'; setTimeout(function(){ el.remove(); }, 300); }, 5000); })();
+</script>
+{{end}}
