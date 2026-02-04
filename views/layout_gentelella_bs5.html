@@ -47,6 +47,8 @@
           <li class="nav-item">
             <a class="nav-link {{='active' if request.controller == 'customers' else ''}}" href="{{=URL('customers','customers_list')}}"><i class="bi bi-people"></i> Клиенты</a>
           </li>
+          {{manager_role_id = 3}}
+          {{if not (auth.user and int(auth.user.role_id or 0) == manager_role_id):}}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle {{='active' if request.controller in ('project_statuses','specification_statuses','nomenclature_items','nomenclature_item_types','user_roles','branches','users','lead_sources') else ''}}" href="#" id="navbarSettings" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-gear"></i> Настройки</a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarSettings">
@@ -60,6 +62,7 @@
               <li><a class="dropdown-item" href="{{=URL('lead_sources','list')}}"><i class="bi bi-funnel me-2"></i>Источники лидов</a></li>
             </ul>
           </li>
+          {{pass}}
         </ul>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
           <li class="nav-item dropdown">
