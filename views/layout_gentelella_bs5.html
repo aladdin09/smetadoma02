@@ -12,18 +12,19 @@
     body { overflow-y: auto; }
     .content-main { overflow-x: hidden; }
     .table-responsive { max-height: none !important; overflow: visible !important; }
-    .navbar-gentelella { background: #2A3F54 !important; padding: 0.25rem 1rem; }
-    .navbar-gentelella.sticky-top { position: sticky; top: 0; z-index: 1030; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
-    .navbar-gentelella .navbar-brand { color: #fff !important; padding: 12px 0; font-size: 1.25rem; }
-    .navbar-gentelella .navbar-brand:hover { color: rgba(255,255,255,.9) !important; }
-    .navbar-gentelella .nav-link { color: rgba(255,255,255,.85) !important; padding: 12px 14px; }
-    .navbar-gentelella .nav-link:hover, .navbar-gentelella .nav-link.active { color: #fff !important; background: rgba(255,255,255,.1); }
+    .navbar-gentelella { background: #fff !important; padding: 0.25rem 1rem; border-bottom: 1px solid #e0e0e0; }
+    .navbar-gentelella.sticky-top { position: sticky; top: 0; z-index: 1030; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+    .navbar-gentelella .navbar-brand { color: #333 !important; padding: 12px 0; font-size: 1.25rem; display: flex; align-items: center; }
+    .navbar-gentelella .navbar-brand:hover { color: #000 !important; }
+    .navbar-gentelella .navbar-brand img { max-height: 40px; margin-right: 10px; }
+    .navbar-gentelella .nav-link { color: #555 !important; padding: 12px 14px; }
+    .navbar-gentelella .nav-link:hover, .navbar-gentelella .nav-link.active { color: #000 !important; background: rgba(0,0,0,.05); }
     .navbar-gentelella .nav-link i { margin-right: 6px; }
-    .navbar-gentelella .dropdown-menu { border: none; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
-    .navbar-gentelella .dropdown-item { padding: 8px 16px; }
-    .navbar-gentelella .dropdown-item:hover { background: #f8f9fa; }
-    .navbar-gentelella .navbar-toggler { border-color: rgba(255,255,255,.3); color: rgba(255,255,255,.85); }
-    .navbar-gentelella .navbar-toggler:focus { box-shadow: 0 0 0 2px rgba(255,255,255,.25); }
+    .navbar-gentelella .dropdown-menu { border: 1px solid #e0e0e0; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+    .navbar-gentelella .dropdown-item { padding: 8px 16px; color: #555; }
+    .navbar-gentelella .dropdown-item:hover { background: #f8f9fa; color: #000; }
+    .navbar-gentelella .navbar-toggler { border-color: rgba(0,0,0,.1); color: #555; }
+    .navbar-gentelella .navbar-toggler:focus { box-shadow: 0 0 0 2px rgba(0,0,0,.1); }
     .content-main { padding: 20px; min-height: 100vh; background: #f8f9fa; }
     .flash-toast { position: fixed; top: 1rem; right: 1rem; z-index: 9999; max-width: 400px; box-shadow: 0 0.5rem 1rem rgba(0,0,0,.2); }
     .navbar-gentelella .navbar-nav.ms-auto .nav-link { padding: 8px 12px; }
@@ -35,7 +36,9 @@
   <!-- Horizontal top menu (закреплено сверху при прокрутке) -->
   <nav class="navbar navbar-expand-lg navbar-gentelella sticky-top">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{{=URL('default','index')}}"><i class="bi bi-speedometer2"></i> {{=request.application or 'CRM'}}</a>
+      <a class="navbar-brand" href="{{=URL('default','index')}}">
+        <img src="{{=URL('static','logo3.png.webp')}}" alt="Logo" />
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarGentelella" aria-controls="navbarGentelella" aria-expanded="false" aria-label="Меню">
         <span class="navbar-toggler-icon"></span>
       </button>

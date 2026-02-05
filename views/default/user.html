@@ -3,22 +3,14 @@
 {{block content}}
 <div class="login_wrapper">
   <div class="login_content">
+    <div class="login_logo">
+      <img src="{{=URL('static','logo3.png.webp')}}" alt="Logo" />
+    </div>
     <h1><i class="bi bi-box-arrow-in-right me-2"></i>{{=T('Вход')}}</h1>
     {{if response.flash:}}
     <div id="loginFlash" class="alert alert-danger mb-3" role="alert">{{=response.flash}}</div>
     {{pass}}
     {{=form}}
-    {{if not 'retrieve_password' in auth.settings.actions_disabled:}}
-    <div class="mt-2">
-      <a class="reset_pass" href="{{=URL('default', 'user', args=['retrieve_password'])}}">{{=T('Забыли пароль?')}}</a>
-    </div>
-    {{pass}}
-    <div class="separator">
-      <div class="brand mt-3">
-        <h2 class="h5 mb-1"><i class="bi bi-speedometer2"></i> {{=request.application}}</h2>
-        <p class="small text-muted mb-0">© {{=request.now.year}}</p>
-      </div>
-    </div>
   </div>
 </div>
 {{end}}

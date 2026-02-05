@@ -8,11 +8,7 @@
 def list():
     """Список источников лидов + панель добавления/редактирования справа."""
     try:
-        try:
-            db.rollback()
-        except:
-            pass
-
+        # Инициализация формы добавления
         form_status = SQLFORM(
             db.lead_sources,
             submit_button='Добавить',
@@ -21,11 +17,27 @@ def list():
             _action=URL('lead_sources', 'list'),
             _method='POST'
         )
+        
+        # Обработка формы добавления
         if form_status.process(formname='lead_source_form', keepvalues=False).accepted:
-            session.flash = 'Источник лида успешно создан'
-            redirect(URL('lead_sources', 'list'))
+            try:
+                db.commit()
+                session.flash = 'Источник лида успешно создан'
+                redirect(URL('lead_sources', 'list'))
+            except Exception as commit_error:
+                try:
+                    db.rollback()
+                except:
+                    pass
+                session.flash = 'Ошибка при сохранении: %s' % str(commit_error)
+                redirect(URL('lead_sources', 'list'))
         elif form_status.errors:
             response.flash = 'Исправьте ошибки в форме'
+            try:
+                db.rollback()
+            except:
+                pass
+        
         if form_status.element('input[type=submit]'):
             form_status.element('input[type=submit]')['_class'] = 'btn btn-primary btn-block'
 
@@ -52,10 +64,23 @@ def list():
                     _method='POST'
                 )
                 if form_edit.process(formname='lead_source_edit_form', keepvalues=False).accepted:
-                    session.flash = 'Источник лида успешно обновлён'
-                    redirect(URL('lead_sources', 'list'))
+                    try:
+                        db.commit()
+                        session.flash = 'Источник лида успешно обновлён'
+                        redirect(URL('lead_sources', 'list'))
+                    except Exception as commit_error:
+                        try:
+                            db.rollback()
+                        except:
+                            pass
+                        session.flash = 'Ошибка при обновлении: %s' % str(commit_error)
+                        redirect(URL('lead_sources', 'list', vars=dict(edit=edit_id)))
                 elif form_edit.errors:
                     response.flash = 'Исправьте ошибки в форме'
+                    try:
+                        db.rollback()
+                    except:
+                        pass
                 if form_edit.element('input[type=submit]'):
                     form_edit.element('input[type=submit]')['_class'] = 'btn btn-primary btn-block'
                 show_edit_panel = True
