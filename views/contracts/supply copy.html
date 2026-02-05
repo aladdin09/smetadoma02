@@ -1,0 +1,144 @@
+{{extend 'layout_gentelella_bs5.html'}}
+
+ {{extend 'layout_gentelella_bs5.html'}}
+
+{{block before_content}}
+<div class="print-header">
+    <div>Название документа — {{=doc_title}}</div>
+</div>
+
+<div class="print-footer">
+    Страница <span class="page-number"></span>
+</div>
+{{end}}
+
+<style>
+/* ===========================
+   ЭКРАН — отображение A4
+   =========================== */
+@media screen {
+  .page {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 auto 20px;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    padding: 20mm;
+    box-sizing: border-box;
+  }
+}
+
+/* ===========================
+   ПЕЧАТЬ — строгая модель страницы
+   =========================== */
+@media print {
+
+  nav.navbar,
+  .navbar,
+  .navbar-gentelella,
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    counter-reset: page;
+  }
+
+  /* ===== КОЛОНТИТУЛЫ ===== */
+
+  .print-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20mm;
+    padding: 4mm 10mm;
+    font-size: 10pt;
+    border-bottom: 1px solid #ccc;
+    background: #fff;
+  }
+
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20mm;
+    padding: 4mm 10mm;
+    font-size: 10pt;
+    border-top: 1px solid #ccc;
+    background: #fff;
+  }
+
+  .print-footer .page-number:after {
+    counter-increment: page;
+    content: counter(page);
+  }
+
+  /* ===== СТРАНИЦА ===== */
+
+  .page {
+    width: 210mm;
+    height: 297mm;
+    padding-top: 20mm;   /* место под верхний колонтитул */
+    padding-bottom: 20mm; /* место под нижний колонтитул */
+    box-sizing: border-box;
+    page-break-after: always;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  /* ===== ТЕЛО СТРАНИЦЫ (200 мм) ===== */
+
+  .page-body {
+    width: 100%;
+    height: 200mm;
+    padding: 10mm 15mm;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+}
+</style>
+
+<div class="no-print" style="margin-bottom:20px;">
+  <button class="btn btn-primary" onclick="window.print()">Печать</button>
+</div>
+
+<!-- ===========================
+     СТРАНИЦЫ ДОКУМЕНТА
+     =========================== -->
+
+<div class="page">
+  <div class="page-body">
+    <h2>Первая страница</h2>
+    <p>Здесь текст договора или любого документа.</p>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-body">
+    <h2>Вторая страница</h2>
+    <p>Здесь продолжение документа.</p>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-body">
+    <h2>Приложение №1</h2>
+    <p>Здесь таблица или спецификация.</p>
+  </div>
+</div>
+ 
+
+

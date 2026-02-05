@@ -1,0 +1,393 @@
+{{extend 'layout_gentelella_bs5.html'}}
+
+<style>
+@media print {
+  body { margin: 0; padding: 0; }
+  .no-print { display: none !important; }
+  .contract-page {
+    page-break-after: always;
+    padding: 20mm;
+    padding-bottom: 15mm;
+    min-height: 282mm;
+    max-height: 282mm;
+    position: relative;
+    margin: 0;
+    background: #fff;
+    display: block;
+    overflow: hidden;
+  }
+  .contract-page:last-child {
+    page-break-after: auto;
+  }
+  .contract-content {
+    margin-bottom: 15mm;
+    padding-bottom: 5mm;
+    overflow: visible;
+    min-height: 0;
+  }
+  .contract-signatures {
+    position: fixed;
+    bottom: 0;
+    left: 20mm;
+    right: 20mm;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 10pt;
+    page-break-inside: avoid;
+    margin-top: 0;
+    padding: 0;
+    height: 15mm;
+    box-sizing: border-box;
+    align-items: center;
+    z-index: 1000;
+  }
+  .contract-signature {
+    width: auto;
+    text-align: right;
+    flex-shrink: 0;
+    margin-left: 20px;
+  }
+  .contract-signature-line {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+    min-height: auto;
+    text-align: right;
+  }
+  .contract-header {
+    margin-bottom: 20px;
+    page-break-after: avoid;
+  }
+  .contract-section {
+    margin-bottom: 15px;
+    page-break-inside: avoid;
+    overflow: visible;
+  }
+  .contract-text {
+    margin-bottom: 10px;
+    line-height: 1.6;
+    page-break-inside: avoid;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+  .contract-table {
+    page-break-inside: auto;
+    margin: 15px 0;
+    border-collapse: collapse;
+  }
+  .contract-table tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  .contract-table thead {
+    display: table-header-group;
+  }
+  .contract-table tbody {
+    display: table-row-group;
+  }
+  .contract-table tfoot {
+    display: table-footer-group;
+  }
+  .contract-table td, .contract-table th {
+    padding: 6px 4px;
+    font-size: 10pt;
+    line-height: 1.3;
+  }
+  .contract-section-title {
+    margin-bottom: 8px;
+    font-size: 13pt;
+  }
+  @page {
+    margin: 0;
+    margin-bottom: 15mm;
+    size: A4;
+  }
+}
+
+@media screen {
+  .contract-container {
+    max-width: 210mm;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .contract-page {
+    min-height: 297mm;
+    padding: 20mm;
+    margin-bottom: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+  }
+  .contract-signatures {
+    margin-top: 50px;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 12pt;
+  }
+  .contract-signature {
+    width: auto;
+    text-align: right;
+    margin-left: 20px;
+  }
+  .contract-signature-line {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+    text-align: right;
+  }
+}
+
+.contract-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.contract-title {
+  font-size: 18pt;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.contract-date {
+  font-size: 12pt;
+  margin-bottom: 20px;
+}
+
+.contract-section {
+  margin-bottom: 20px;
+}
+
+.contract-section-title {
+  font-size: 14pt;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.contract-text {
+  font-size: 12pt;
+  line-height: 1.6;
+  text-align: justify;
+  margin-bottom: 15px;
+}
+
+.contract-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 11pt;
+}
+
+.contract-table th,
+.contract-table td {
+  border: 1px solid #000;
+  padding: 8px;
+  text-align: left;
+}
+
+.contract-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.contract-table td {
+  text-align: left;
+}
+
+.contract-table .number {
+  text-align: center;
+  width: 5%;
+}
+
+.contract-table .quantity {
+  text-align: center;
+  width: 10%;
+}
+
+.contract-table .price {
+  text-align: right;
+  width: 15%;
+}
+
+.contract-table .total {
+  text-align: right;
+  width: 15%;
+}
+
+.contract-total {
+  margin-top: 20px;
+  text-align: right;
+  font-size: 14pt;
+  font-weight: bold;
+}
+
+.print-btn {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1000;
+}
+</style>
+
+<div class="no-print">
+  <button class="btn btn-primary print-btn" onclick="window.print()">
+    <i class="bi bi-printer"></i> Печать
+  </button>
+</div>
+
+<div class="contract-container">
+  <div class="contract-page">
+    <div class="contract-content">
+    <div class="contract-header">
+      <div class="contract-title">Договор на сборку</div>
+      <div class="contract-date">г. Краснодар, {{=contract_date.strftime('%d.%m.%Y') if hasattr(contract_date, 'strftime') else str(contract_date)}} г.</div>
+    </div>
+
+    <div class="contract-section">
+      <div class="contract-text">
+        <strong>Исполнитель:</strong> ООО "ПСК ДОМА КУБАНИ", ИНН 1234567890, ОГРН 1234567890123, 
+        адрес: г. Краснодар, ул. Примерная, д. 1, тел.: +7 (999) 123-45-67
+      </div>
+      <div class="contract-text">
+        <strong>Заказчик:</strong> {{=customer_full_name}}, 
+        {{if customer.phone:}}тел.: {{=customer.phone}}{{pass}}
+        {{if customer.email:}}, email: {{=customer.email}}{{pass}}
+        {{if customer.address:}}, адрес: {{=customer.address}}{{pass}}
+      </div>
+    </div>
+
+    <div class="contract-section">
+      <div class="contract-text">
+        <strong>ФИО Заказчика:</strong> {{=customer_full_name}}
+      </div>
+      <div class="contract-text">
+        <strong>Номер телефона:</strong> {{=customer.phone if customer.phone else 'Не указан'}}
+      </div>
+      <div class="contract-text">
+        <strong>Адрес:</strong> {{=customer.address if customer.address else 'Не указан'}}
+      </div>
+      <div class="contract-text">
+        <strong>Сумма спецификации (ID={{=specification.id}}):</strong> <strong>{{=("{:,.2f}".format(float(specification.total_amount or 0))).replace(',', ' ')}} ₽</strong>
+      </div>
+    </div>
+
+    <div class="contract-section">
+      <div class="contract-section-title">1. Предмет договора</div>
+      <div class="contract-text">
+        Исполнитель обязуется выполнить работы по сборке конструкций (изделий) в соответствии со спецификацией, 
+        указанной в настоящем договоре, а Заказчик обязуется принять выполненные работы и оплатить их.
+      </div>
+    </div>
+
+    <div class="contract-section">
+      <div class="contract-section-title">2. Сроки выполнения работ</div>
+      <div class="contract-text">
+        Работы по сборке выполняются в срок, согласованный сторонами дополнительно.
+        {{if specification.deadline:}}
+        Срок выполнения работ: до {{=specification.deadline.strftime('%d.%m.%Y') if hasattr(specification.deadline, 'strftime') else str(specification.deadline)}} г.
+        {{else:}}
+        Срок выполнения работ согласовывается сторонами дополнительно.
+        {{pass}}
+        {{if specification.execution_time:}}
+        Время выполнения: {{=specification.execution_time}} дней.
+        {{pass}}
+      </div>
+    </div>
+
+    <div class="contract-section">
+      <div class="contract-section-title">3. Цена и порядок расчетов</div>
+      <div class="contract-text">
+        Общая стоимость работ по сборке составляет <strong>{{=("{:,.2f}".format(float(specification.total_amount or 0))).replace(',', ' ')}} ₽</strong>.
+      </div>
+      <div class="contract-text">
+        Оплата производится в порядке и сроки, согласованные сторонами дополнительно.
+      </div>
+    </div>
+
+    <div class="contract-section">
+      <div class="contract-section-title">4. Качество работ</div>
+      <div class="contract-text">
+        Выполненные работы должны соответствовать требованиям нормативной документации, техническим условиям 
+        и обеспечивать надлежащее качество собранных конструкций (изделий).
+      </div>
+    </div>
+
+    <div class="contract-section">
+      <div class="contract-section-title">5. Гарантийные обязательства</div>
+      <div class="contract-text">
+        Исполнитель гарантирует качество выполненных работ в течение гарантийного срока, установленного 
+        соглашением сторон или нормативными документами.
+      </div>
+    </div>
+
+    <div class="contract-section">
+      <div class="contract-section-title">6. Ответственность сторон</div>
+      <div class="contract-text">
+        Стороны несут ответственность за неисполнение или ненадлежащее исполнение обязательств по настоящему договору 
+        в соответствии с законодательством Российской Федерации.
+      </div>
+    </div>
+
+    <div class="contract-section">
+      <div class="contract-section-title">7. Прочие условия</div>
+      <div class="contract-text">
+        Все споры и разногласия решаются путем переговоров, а при недостижении согласия - в судебном порядке.
+      </div>
+      <div class="contract-text">
+        Настоящий договор вступает в силу с момента подписания и действует до полного исполнения сторонами своих обязательств.
+      </div>
+    </div>
+    </div>
+
+    <div class="contract-signatures">
+      <div class="contract-signature">
+        <div class="contract-signature-line">
+          <div>___________________ Исполнитель</div>
+          <div style="margin-top: 3px; font-size: 9pt;">ООО "ПСК Дома Кубани"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Добавляем подписи на каждую страницу при печати
+window.addEventListener('beforeprint', function() {
+  // Добавляем подписи через CSS для каждой страницы
+  var style = document.createElement('style');
+  style.textContent = `
+    @media print {
+      .contract-page::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: 30mm;
+        left: 20mm;
+        right: 20mm;
+        height: 60px;
+        border-top: none;
+      }
+      .contract-page {
+        counter-increment: page;
+      }
+      .contract-page::before {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: 30mm;
+        left: 20mm;
+        right: 20mm;
+        height: 60px;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+});
+
+// После печати восстанавливаем
+window.addEventListener('afterprint', function() {
+  // Можно добавить очистку, если нужно
+});
+</script>

@@ -1,0 +1,375 @@
+{{extend 'layout_gentelella_bs5.html'}}
+
+{{block before_content}}
+
+
+
+{{end}}
+
+<style>
+/* ===========================
+   ЭКРАН — просто белый лист
+   =========================== */
+@media screen {
+  .print-container {
+    width: 210mm;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20mm;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  }
+
+  .contract-title {
+    font-size: 18pt;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+  }
+
+  .contract-date {
+    font-size: 12pt;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .contract-section {
+    margin-bottom: 20px;
+  }
+
+  .contract-section-title {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .contract-text {
+    font-size: 12pt;
+    line-height: 1.6;
+    text-align: justify;
+    margin-bottom: 15px;
+  }
+
+  .contract-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 11pt;
+  }
+
+  .contract-table th,
+  .contract-table td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .contract-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .contract-table .text-center {
+    text-align: center;
+  }
+
+  .contract-table .text-right {
+    text-align: right;
+  }
+
+  .contract-table .tree-parent {
+    background-color: #e5e7eb;
+    font-weight: bold;
+  }
+
+  .contract-table .tree-child td:first-child {
+    padding-left: 24px;
+  }
+}
+
+/* ===========================
+   ПЕЧАТЬ — автоматические страницы
+   =========================== */
+@media print {
+
+  nav.navbar,
+  .navbar,
+  .navbar-gentelella,
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 20mm 15mm 20mm 15mm; /* поля страницы */
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    counter-reset: page;
+  }
+
+  /* ===== КОЛОНТИТУЛЫ ===== */
+
+
+
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 15mm;
+    padding: 3mm 10mm;
+    font-size: 10pt;
+    border-top: 1px solid #ccc;
+    background: #fff;
+  }
+
+  .print-footer .page-number:after {
+    counter-increment: page;
+    content: counter(page);
+  }
+
+  /* ===== ОСНОВНОЙ КОНТЕЙНЕР ===== */
+
+  .print-container {
+
+    padding-bottom: 40mm; /* место под нижний колонтитул */
+  }
+
+  /* ===== АВТОМАТИЧЕСКИЕ РАЗРЫВЫ ===== */
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  /* Таблицы не рвутся */
+  .contract-table {
+    page-break-inside: auto;
+  }
+
+  .contract-table thead {
+    display: table-header-group;
+  }
+
+  .contract-table tfoot {
+    display: table-footer-group;
+  }
+
+  .contract-table tr {
+    page-break-inside: avoid;
+  }
+
+  .contract-title {
+    font-size: 18pt;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+  }
+
+  .contract-date {
+    font-size: 12pt;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .contract-section {
+    margin-bottom: 15px;
+    page-break-inside: avoid;
+  }
+
+  .contract-section-title {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .contract-text {
+    font-size: 12pt;
+    line-height: 1.6;
+    text-align: justify;
+    margin-bottom: 10px;
+  }
+
+  .contract-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 10pt;
+  }
+
+  .contract-table th,
+  .contract-table td {
+    border: 1px solid #000;
+    padding: 6px 4px;
+    text-align: left;
+  }
+
+  .contract-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .contract-table .text-center {
+    text-align: center;
+  }
+
+  .contract-table .text-right {
+    text-align: right;
+  }
+
+  .contract-table .tree-parent {
+    background-color: #e5e7eb;
+    font-weight: bold;
+  }
+
+  .contract-table .tree-child td:first-child {
+    padding-left: 24px;
+  }
+}
+</style>
+
+<div class="no-print" style="margin-bottom:20px;">
+  <button class="btn btn-primary" onclick="window.print()">Печать</button>
+</div>
+
+<div class="print-container">
+
+<div class="contract-title">Договор на поставку</div>
+<div class="contract-date">г. Краснодар, {{=contract_date.strftime('%d.%m.%Y') if hasattr(contract_date, 'strftime') else str(contract_date)}} г.</div>
+
+<div class="contract-section">
+  <div class="contract-text">
+    <strong>Исполнитель:</strong> ИП Старостин В.В.<br>
+    ОГРН: 304583710700144<br>
+    ИНН 583700268500<br>
+    Юр.адрес: г.Пенза, проезд Электрический д.1 кв.61.<br>
+    р/сч. 40802810124870000052<br>
+    в Приволжском филиале ОАО АКБ «Росбанк» г. Нижний Новгород<br>
+    к/сч 30101810400000000747<br>
+    Электронная почта: tb58pnz@mail.ru<br>
+  </div>
+</div>
+
+<div class="contract-section">
+  <div class="contract-section-title">Данные Заказчика:</div>
+  <div class="contract-text">
+    <strong>ФИО:</strong> {{=customer_full_name}}
+  </div>
+  <div class="contract-text">
+    <strong>Номер телефона:</strong> {{=customer.phone if customer.phone else 'Не указан'}}
+  </div>
+  <div class="contract-text">
+    <strong>Адрес:</strong> {{=customer.address if customer.address else 'Не указан'}}
+  </div>
+  <div class="contract-text">
+    <strong>Сумма спецификации (ID={{=specification.id}}):</strong> <strong>{{=("{:,.2f}".format(float(specification.total_amount or 0))).replace(',', ' ')}} ₽</strong>
+  </div>
+</div>
+
+<div class="contract-section">
+  <div class="contract-section-title">1. Предмет договора</div>
+  <div class="contract-text">
+    Исполнитель обязуется поставить товары (материалы) в соответствии со спецификацией, указанной в настоящем договоре, 
+    а Заказчик обязуется принять и оплатить поставленные товары (материалы).
+  </div>
+</div>
+
+<div class="contract-section">
+  <div class="contract-section-title">2. Сроки поставки</div>
+  <div class="contract-text">
+    Поставка товаров (материалов) осуществляется в срок, согласованный сторонами дополнительно. 
+    {{if specification.deadline:}}
+    Срок поставки: до {{=specification.deadline.strftime('%d.%m.%Y') if hasattr(specification.deadline, 'strftime') else str(specification.deadline)}} г.
+    {{else:}}
+    Срок поставки согласовывается сторонами дополнительно.
+    {{pass}}
+  </div>
+</div>
+
+<div class="contract-section">
+  <div class="contract-section-title">3. Цена и порядок расчетов</div>
+  <div class="contract-text">
+    Общая стоимость товаров (материалов) составляет <strong>{{=("{:,.2f}".format(float(specification.total_amount or 0))).replace(',', ' ')}} ₽</strong>.
+  </div>
+  <div class="contract-text">
+    Оплата производится в порядке и сроки, согласованные сторонами дополнительно.
+  </div>
+</div>
+
+<div class="contract-section">
+  <div class="contract-section-title">4. Качество и комплектность</div>
+  <div class="contract-text">
+    Поставляемые товары (материалы) должны соответствовать требованиям нормативной документации и иметь необходимую комплектность.
+  </div>
+</div>
+
+<div class="contract-section">
+  <div class="contract-section-title">5. Ответственность сторон</div>
+  <div class="contract-text">
+    Стороны несут ответственность за неисполнение или ненадлежащее исполнение обязательств по настоящему договору 
+    в соответствии с законодательством Российской Федерации.
+  </div>
+</div>
+
+<div class="contract-section">
+  <div class="contract-section-title">6. Прочие условия</div>
+  <div class="contract-text">
+    Все споры и разногласия решаются путем переговоров, а при недостижении согласия - в судебном порядке.
+  </div>
+  <div class="contract-text">
+    Настоящий договор вступает в силу с момента подписания и действует до полного исполнения сторонами своих обязательств.
+  </div>
+</div>
+
+<!-- Автоматический разрыв страницы для КП -->
+<div class="page-break"></div>
+
+<div class="contract-title">Приложение №1 к договору на поставку</div>
+
+<div class="contract-section">
+  <table class="contract-table">
+    <thead>
+      <tr>
+        <th>Тип позиции / Позиция номенклатуры</th>
+        <th class="text-center" style="width: 70px;">Кол-во</th>
+        <th class="text-center" style="width: 50px;">Ед.</th>
+        <th class="text-right" style="width: 90px;">Цена, ₽</th>
+        <th class="text-right" style="width: 90px;">Сумма, ₽</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{if kp_items_grouped:}}
+      {{for type_name, items in kp_items_grouped:}}
+      <tr class="tree-parent" style="background-color: #e5e7eb; font-weight: bold;">
+        <td colspan="5"><strong>{{=type_name}}</strong></td>
+      </tr>
+      {{for row in items:}}
+      {{si = row.specification_items}}
+      <tr class="tree-child">
+        <td style="padding-left: 24px;">{{=row.nomenclature_items.description if row.nomenclature_items and (row.nomenclature_items.description or '').strip() else (si.item_name or '-')}}</td>
+        <td class="text-center">{{=si.quantity or 0}}</td>
+        <td class="text-center">{{=si.unit or 'шт.'}}</td>
+        <td class="text-right">{{=("{:,.2f}".format(float(si.price or 0))).replace(',', ' ')}}</td>
+        <td class="text-right">{{=("{:,.2f}".format(row.recalc_total)).replace(',', ' ')}}</td>
+      </tr>
+      {{pass}}
+      {{pass}}
+      {{else:}}
+      <tr><td colspan="5" class="text-center">Позиции отсутствуют</td></tr>
+      {{pass}}
+    </tbody>
+    <tfoot>
+      <tr style="font-weight: bold; background-color: #f3f4f6;">
+        <td colspan="4" style="text-align: right; padding-right: 8px;">ИТОГО:</td>
+        <td class="text-right">{{=kp_total_amount_formatted}} ₽</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+</div>
